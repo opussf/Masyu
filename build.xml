@@ -1,16 +1,22 @@
-<project name="INeed" default="package">
+<project name="Masyu" default="package">
 
 	<tstamp/>
 	<property file="build.properties"/>
 	<property environment="env"/>
 	<property name="env.BUILD_NUMBER" value=""/>
 	<property name="build.number" value=""/>
-	<property name="addon.dir" location="${ADDONLOC}/${ant.project.name}"/>
 	<!--  Pull git repo info -->
+	<!-- Get the first commit -->
+	<exec executable="git" dir="." outputproperty="git.first" failifexecutionfails="false" errorproperty="">
+		<arg line="rev-list --abbrev-commit --max-parents=0 HEAD" />
+	</exec>
 	<!-- Get the last tag reachable from this branch -->
-	<exec executable="git" dir="." outputproperty="git.tag" failifexecutionfails="false" errorproperty="">
+	<exec executable="git" dir="." outputproperty="git.tag.tmp" failifexecutionfails="false" errorproperty="">
 		<arg line="describe --tags --abbrev=0" />
 	</exec>
+	<condition property="git.tag" value="${git.tag.tmp}" else="${git.first}">
+		<length string="${git.tag.tmp}" trim="true" when="greater" length="0"/>
+	</condition>
 	<!-- Get a 'revision' based on last tag, commit count, commitsha, and branch name -->
 	<exec executable="git" dir="." outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
 		<arg line="describe --tags --always HEAD" />
@@ -63,8 +69,15 @@
 		<available file="${test.dir}/test.lua" type="file"/>
 	</condition>
 
-	<filter token="VERSION" value="${version.number}"/>
-	<filter token="INTERFACE" value="${INTERFACE}"/>
+	<patternset id="packageFiles">
+		<include name="src/*.xml"/>
+		<include name="src/*.toc"/>
+		<include name="src/*.lua"/>
+		<include name="README.md"/>
+		<include name="${working.dir}/*.txt"/>
+	</patternset>
+
+	<!--  -->
 
 	<target name="clean" description="Cleans old builds">
 		<delete dir="target" verbose="true"/>
@@ -74,7 +87,7 @@
 		<mkdir dir="${working.dir}"/>
 		<echo file="${working.dir}/changelog.txt">Changes since ${git.tag}..${line.separator}${line.separator}</echo>
 		<exec executable="git" dir=".">
-			<arg line="log --graph --pretty=format:'%h %ci - %d %s &lt;%an&gt;' ${git.tag}~1.."/>
+			<arg line="log --graph --pretty=format:'%h %ci - %d %s &lt;%an&gt;' ${git.tag}.."/>
 			<redirector append="true" output="${working.dir}/changelog.txt"/>
 		</exec>
 	</target>
@@ -82,20 +95,9 @@
 	<target name="package" depends="changelog, test" description="Create a deploy package">
 		<property name="package.dir" location="${working.dir}/${ant.project.name}"/>
 		<delete dir="${package.dir}" verbose="false"/>
-		<copy	todir="${package.dir}" filtering="true">
-			<fileset dir="src">
-				<include name="*.lua"/>
-				<include name="*.toc"/>
-				<include name="*.xml"/>
-				<include name="*.txt"/>
-			</fileset>
-			<fileset dir="${working.dir}">
-				<include name="*.txt"/>
-			</fileset>
-		</copy>
-		<copy   todir="${package.dir}/collections" filtering="false">
-			<fileset dir="collections">
-				<include name="*"/>
+		<copy	todir="${package.dir}" filtering="true" flatten="true">
+			<fileset dir=".">
+				<patternset refid="packageFiles"/>
 			</fileset>
 		</copy>
 		<zip 	destfile="${target.dir}/${project.zip}"
