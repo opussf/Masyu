@@ -65,10 +65,6 @@
 	<property name="working.dir" location="${target.dir}/working"/>
 	<property name="report.dir" location="${target.dir}/reports"/>
 
-	<condition property="test.check">
-		<available file="${test.dir}/test.lua" type="file"/>
-	</condition>
-
 	<patternset id="packageFiles">
 		<include name="src/*.py"/>
 		<include name="README.md"/>
@@ -124,7 +120,7 @@
 		<echo file="${target.dir}/${project.zip}.md5">${zip.md5} ${project.zip}${line.separator}</echo>
 	</target>
 
-	<target name="test" description="run unit tests" if="test.check">
+	<target name="test" description="run unit tests">
 		<mkdir  dir="${report.dir}"/>
 		<exec executable="python" dir="${test.dir}">
 			<arg value="TestSuite.py"/>
@@ -139,7 +135,7 @@
 		</fail>
 	</target>
 
-	<target name="test_old" depends="init">
+	<target name="test_old">
 		<exec executable="python">
 			<arg value="MakeTestSudokuFiles.py"/>
 		</exec>
