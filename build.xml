@@ -91,6 +91,7 @@
 	</target>
 
 	<target name="doc" description="create docs">
+		<delete dir="${target.dir}/docs" verbose="false"/>
 		<exec executable="pydoc" dir="src">
 			<arg value="-w"/>
 			<arg value="./"/>
@@ -109,7 +110,6 @@
 			<fileset dir=".">
 				<patternset refid="packageFiles"/>
 			</fileset>
-
 		</copy>
 		<copy   todir="${package.dir}/docs" filtering="false">
 			<fileset dir="${target.dir}/docs">
@@ -126,8 +126,8 @@
 
 	<target name="test" description="run unit tests" if="test.check">
 		<mkdir  dir="${report.dir}"/>
-		<exec executable="lua" dir="test" resultproperty="testResult">
-			<arg value="test.lua"/>
+		<exec executable="python" dir="${test.dir}">
+			<arg value="TestSuite.py"/>
 		</exec>
 		<move todir="${report.dir}" file="${test.dir}/testOut.xml"/>
 		<fail message="The tests failed. Please see the output for details.">
@@ -138,5 +138,20 @@
 			</condition>
 		</fail>
 	</target>
+
+	<target name="test_old" depends="init">
+		<exec executable="python">
+			<arg value="MakeTestSudokuFiles.py"/>
+		</exec>
+		<exec executable="python">
+			<arg value="TestSuite.py"/>
+		</exec>
+		<move todir="testResults">
+			<fileset dir=".">
+				<include name="TEST*.xml"/>
+			</fileset>
+		</move>
+	</target>
+
 
 </project>
