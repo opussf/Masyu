@@ -121,11 +121,23 @@
 	</target>
 
 	<target name="test" description="run unit tests">
-		<mkdir  dir="${report.dir}"/>
-		<exec executable="python" dir="${test.dir}">
+		<delete dir="${report.dir}"/>
+		<copy   todir="${working.dir}" filtering="true">
+			<fileset dir="src">
+				<include name="*.py"/>
+			</fileset>
+			<fileset dir="${test.dir}">
+				<include name="**"/>
+			</fileset>
+		</copy>
+		<exec executable="python" dir="${working.dir}" resultproperty="testResult">
 			<arg value="TestSuite.py"/>
 		</exec>
-		<move todir="${report.dir}" file="${test.dir}/testOut.xml"/>
+		<move todir="${report.dir}">
+			<fileset dir="${working.dir}">
+				<include name="TEST*.xml"/>
+			</fileset>
+		</move>
 		<fail message="The tests failed. Please see the output for details.">
 			<condition>
 				<not>
@@ -134,20 +146,5 @@
 			</condition>
 		</fail>
 	</target>
-
-	<target name="test_old">
-		<exec executable="python">
-			<arg value="MakeTestSudokuFiles.py"/>
-		</exec>
-		<exec executable="python">
-			<arg value="TestSuite.py"/>
-		</exec>
-		<move todir="testResults">
-			<fileset dir=".">
-				<include name="TEST*.xml"/>
-			</fileset>
-		</move>
-	</target>
-
 
 </project>
