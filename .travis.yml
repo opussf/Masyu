@@ -1,5 +1,4 @@
 language: python
 sudo: false
-install:
-	- pip install unittest-xml-reporting
+install: pip install unittest-xml-reporting
 script: ant clean package
