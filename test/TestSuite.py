@@ -7,4 +7,5 @@ suite = unittest.TestSuite()
 suite.addTests( unittest.makeSuite( TestMasyuBoard ) )
 
 if __name__=="__main__":
-	xmlrunner.XMLTestRunner().run( suite )
+	testsRan = xmlrunner.XMLTestRunner().run( suite )
+	exit( len( testsRan.failures ) + len( testsRan.errors ) )
