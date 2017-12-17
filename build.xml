@@ -99,7 +99,7 @@
 		</move>
 	</target>
 
-	<target name="package" depends="changelog, doc, test" description="Create a deploy package">
+	<target name="package" depends="changelog, test, doc" description="Create a deploy package">
 		<property name="package.dir" location="${working.dir}/${ant.project.name}"/>
 		<delete dir="${package.dir}" verbose="false"/>
 		<copy	todir="${package.dir}" filtering="true" flatten="true">
