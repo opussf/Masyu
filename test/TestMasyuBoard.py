@@ -42,6 +42,17 @@ class TestMasyuBoard(unittest.TestCase):
 		self.assertEquals( len( self.masyuBoard.baseBoard ), 12 )
 		self.assertEquals( self.masyuBoard.xSize, 3 )
 		self.assertEquals( self.masyuBoard.ySize, 4 )
+	def notest_initBoard_string_linefeeds_oddSize( self ):
+		""" @todo: decide if this is needed / fix / make work """
+		""" initBoard with a blank puzzle, string, with linefeeds """
+		self.masyuBoard.initBoard( line="....\n...\n...\n..." )
+		self.assertEquals( len( self.masyuBoard.baseBoard ), 12 )
+		self.assertEquals( self.masyuBoard.xSize, 3 )
+		self.assertEquals( self.masyuBoard.ySize, 4 )
+	def test_initBoard_fromFile( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( len( self.masyuBoard.baseBoard ), 9 )
+		self.assertEquals( self.masyuBoard.baseBoard[2], "b" )
 
 #	def test_initBoard_03( self ):
 #		""" initBoard from a file """
