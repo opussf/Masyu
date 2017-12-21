@@ -65,10 +65,6 @@
 	<property name="working.dir" location="${target.dir}/working"/>
 	<property name="report.dir" location="${target.dir}/reports"/>
 
-	<condition property="test.check">
-		<available file="${test.dir}/test.lua" type="file"/>
-	</condition>
-
 	<patternset id="packageFiles">
 		<include name="src/*.py"/>
 		<include name="README.md"/>
@@ -91,6 +87,7 @@
 	</target>
 
 	<target name="doc" description="create docs">
+		<delete dir="${target.dir}/docs" verbose="false"/>
 		<exec executable="pydoc" dir="src">
 			<arg value="-w"/>
 			<arg value="./"/>
@@ -102,14 +99,13 @@
 		</move>
 	</target>
 
-	<target name="package" depends="changelog, doc, test" description="Create a deploy package">
+	<target name="package" depends="changelog, test, doc" description="Create a deploy package">
 		<property name="package.dir" location="${working.dir}/${ant.project.name}"/>
 		<delete dir="${package.dir}" verbose="false"/>
 		<copy	todir="${package.dir}" filtering="true" flatten="true">
 			<fileset dir=".">
 				<patternset refid="packageFiles"/>
 			</fileset>
-
 		</copy>
 		<copy   todir="${package.dir}/docs" filtering="false">
 			<fileset dir="${target.dir}/docs">
@@ -124,12 +120,24 @@
 		<echo file="${target.dir}/${project.zip}.md5">${zip.md5} ${project.zip}${line.separator}</echo>
 	</target>
 
-	<target name="test" description="run unit tests" if="test.check">
-		<mkdir  dir="${report.dir}"/>
-		<exec executable="lua" dir="test" resultproperty="testResult">
-			<arg value="test.lua"/>
+	<target name="test" description="run unit tests">
+		<delete dir="${report.dir}"/>
+		<copy   todir="${working.dir}" filtering="true">
+			<fileset dir="src">
+				<include name="*.py"/>
+			</fileset>
+			<fileset dir="${test.dir}">
+				<include name="**"/>
+			</fileset>
+		</copy>
+		<exec executable="python" dir="${working.dir}" resultproperty="testResult">
+			<arg value="TestSuite.py"/>
 		</exec>
-		<move todir="${report.dir}" file="${test.dir}/testOut.xml"/>
+		<move todir="${report.dir}">
+			<fileset dir="${working.dir}">
+				<include name="TEST*.xml"/>
+			</fileset>
+		</move>
 		<fail message="The tests failed. Please see the output for details.">
 			<condition>
 				<not>
