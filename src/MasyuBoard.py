@@ -63,7 +63,15 @@ class MasyuBoard( object ):
 		return "\n".join( out )
 	def getValue( self, x, y ):
 		""" returns a tuple of the base and line boards """
-		if( x >= self.xSize  or y >= self.ySize ):
+		if( x >= self.xSize or y >= self.ySize ):
 			raise( ValueError )
 		offset = y*self.xSize + x
 		return( (self.baseBoard[offset], self.lineBoard[offset]) )
+	def setValue( self, x, y, value=None ):
+		""" sets a value """
+		if( x >= self.xSize or y >= self.ySize ):
+			raise( ValueError )
+		if( value == None ):
+			value = "."
+		offset = y*self.xSize + x
+		self.baseBoard[offset] = value
