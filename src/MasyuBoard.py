@@ -5,7 +5,6 @@
 # Started:    16 Dec 2017
 #########################################
 
-#@todo: create a const class for n = 1000 (8), e=0100 (4), s=0010 (2), w=0001 (1)
 import math
 
 class MasyuBoard( object ):
@@ -18,6 +17,11 @@ class MasyuBoard( object ):
 	"""
 	def __init__( self, debug=False ):
 		self.debug = debug
+#		self.NORTH = 1
+#		self.EAST  = 2
+#		self.SOUTH = 4
+#		self.WEST  = 8
+
 	def initBoard( self, xSize=None, ySize=None, line=None ):
 		""" init the board,
 		xSize @parameter (int or None): xSize of the puzzle.
@@ -41,17 +45,33 @@ class MasyuBoard( object ):
 			self.ySize = ySize or xSize
 #		if self.debug:
 #			print( ":: (xSize, ySize) (%s,%s) line: %s" % ( self.xSize or "None", self.ySize or "None", line or "None" ) )
-
 		self.baseBoard = ["."] * ( self.xSize * self.ySize )
-		self.lineBoard = [None] * ( self.xSize * self.ySize )
+		self.lineBoard = [0b00000000] * ( self.xSize * self.ySize )
 
 		if line:
 			self.baseBoard = [ brokenLine[y][x] for y in range(self.ySize) for x in range(self.xSize) ]
-
 		if self.debug:
 			print self.baseBoard
-
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
 		puzzle = file( puzzleFile, "r" ).read()
 		self.initBoard( line=puzzle )
+	def __str__( self ):
+		#yaya = [ [ self.baseBoard[] ] ]
+		out = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
+		out = map( "".join, out )
+		return "\n".join( out )
+	def getValue( self, x, y ):
+		""" returns a tuple of the base and line boards """
+		if( x >= self.xSize or y >= self.ySize ):
+			raise( ValueError )
+		offset = y*self.xSize + x
+		return( (self.baseBoard[offset], self.lineBoard[offset]) )
+	def setValue( self, x, y, value=None ):
+		""" sets a value """
+		if( x >= self.xSize or y >= self.ySize ):
+			raise( ValueError )
+		if( value == None ):
+			value = "."
+		offset = y*self.xSize + x
+		self.baseBoard[offset] = value

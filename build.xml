@@ -97,6 +97,11 @@
 				<include name="*.html"/>
 			</fileset>
 		</move>
+		<delete>
+			<fileset dir="src">
+				<include name="**/*.pyc"/>
+			</fileset>
+		</delete>
 	</target>
 
 	<target name="package" depends="changelog, test, doc" description="Create a deploy package">
