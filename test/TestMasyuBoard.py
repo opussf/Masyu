@@ -77,6 +77,25 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" string shows board """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.assertEquals( self.masyuBoard.__str__(), ".wb\n...\nb.." )
+	def test_setValue_goodRange_black( self ):
+		self.masyuBoard.setValue( 0, 0, "b" )
+		self.assertEquals( self.masyuBoard.getValue( 0, 0 ), ( "b", 0 ) )
+	def test_setValue_goodRange_white( self ):
+		self.masyuBoard.setValue( 1, 0, "w" )
+		self.assertEquals( self.masyuBoard.getValue( 1, 0 ), ( "w", 0 ) )
+	def test_setValue_goodRange_empty_null( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.masyuBoard.setValue( 2, 0 )
+		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 0 ) )
+	def test_setValue_goodRange_empty_period( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.masyuBoard.setValue( 2, 0, "." )
+		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 0 ) )
+	def test_setValue_outsideRange_xHigh( self ):
+		self.assertRaises( ValueError, self.masyuBoard.setValue, 3, 0, "b" )
+	def test_setValue_outsideRange_yHigh( self ):
+		self.assertRaises( ValueError, self.masyuBoard.setValue, 0, 3, "b" )
+
 
 def suite():
 	suite = unittest.TestSuite()
