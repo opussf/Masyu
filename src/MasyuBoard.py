@@ -13,6 +13,8 @@ class MasyuBoard( object ):
 	lineBoard is a single list that holds the values for the lines.
 		A line is defined as an 8 bit value of entry / exit points, and unavailable exit / entry points.
 		(not) nesw << 4 + nesw
+	The minimum size of a Masyu board is 2x3 or 3x2.
+		This would be solved with a single white dot in the middle of the 'long' dimension.
 
 	"""
 	NORTH = 1
@@ -44,6 +46,9 @@ class MasyuBoard( object ):
 		else:
 			self.xSize = xSize
 			self.ySize = ySize or xSize
+		if( ( self.xSize < 2 or self.ySize < 2 ) or
+				( self.xSize <= 2 and self.xSize <= 2 ) ):
+			raise( ValueError )
 #		if self.debug:
 #			print( ":: (xSize, ySize) (%s,%s) line: %s" % ( self.xSize or "None", self.ySize or "None", line or "None" ) )
 		self.baseBoard = ["."] * ( self.xSize * self.ySize )
@@ -95,4 +100,3 @@ class MasyuBoard( object ):
 		if( value < 0 or value > 15 ):
 			raise( ValueError )
 		self.lineBoard[offset] = self.lineBoard[offset] | value
-
