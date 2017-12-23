@@ -13,6 +13,9 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" initBoard with a blank puzzle, size.  Create a square puzzle """
 		self.masyuBoard.initBoard( 3 )
 		self.assertEquals( len( self.masyuBoard.baseBoard ), 9 )
+	def test_initBoard_cannotInitTooSmall( self ):
+		""" the smallest Masyu board is 3x3. """
+		self.assertRaises( ValueError, self.masyuBoard.initBoard, 2 )
 	def test_initBoard_dualDimension_named( self ):
 		""" initBoard with a blank puzzle, 2 sizes.  Allows a non-square puzzle. """
 		self.masyuBoard.initBoard( xSize=4, ySize=3 )
