@@ -31,3 +31,24 @@ The different circles have different rules:
 	│ │ │┘│
 	└─┴─┴─┘
 
+## Printed board
+
+		. w─b
+		    │
+		. . .
+
+		b . .
+
+─ = \u2500
+│ = \u2502
+┌ = \u250c
+┐ = \u2510
+└ = \u2514
+┘ = \u2518
+http://jrgraphix.net/r/Unicode/2500-257F
+
+## Ideas
+
+Create a board object that holds, as 2 data structures, both the original board and the line.
+The line is stored as known exit points from that square, and known non-exit points.
+

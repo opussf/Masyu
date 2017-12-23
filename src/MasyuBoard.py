@@ -15,13 +15,13 @@ class MasyuBoard( object ):
 		(not) nesw << 4 + nesw
 
 	"""
+	NORTH = 1
+	EAST  = 2
+	SOUTH = 4
+	WEST  = 8
+	dirLetters = { 'w': WEST, 's': SOUTH, 'e': EAST, 'n': NORTH }
 	def __init__( self, debug=False ):
 		self.debug = debug
-#		self.NORTH = 1
-#		self.EAST  = 2
-#		self.SOUTH = 4
-#		self.WEST  = 8
-
 	def initBoard( self, xSize=None, ySize=None, line=None ):
 		""" init the board,
 		xSize @parameter (int or None): xSize of the puzzle.
@@ -75,3 +75,24 @@ class MasyuBoard( object ):
 			value = "."
 		offset = y*self.xSize + x
 		self.baseBoard[offset] = value
+	def setExit( self, x, y, value=None ):
+		""" sets the exit flag for value direction.
+		value @parameter (binary, single char, None) value to set.
+		"""
+		if( x >= self.xSize or y >= self.ySize ):
+			raise( ValueError )
+		if( isinstance( value, int ) ):
+			print "value is int"
+		elif( isinstance( value, str ) ):
+			value = value.lower()
+			print "value is str"
+			dirs = self.dirLetters.keys()
+			print "dirs: %s" % (dirs,)
+		else:
+			print "unknown value"
+		print type(value)
+		#if( type(value) == '')
+
+		print "value[0]: %s" % ( value[0], )
+
+
