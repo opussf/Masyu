@@ -1,4 +1,8 @@
-# SolveMasyu.py
+#########################################
+# Project:    Masyu Solver
+# Filename:   SolveMasyu.py
+# Author:     Opussf
+# Started:    16 Dec 2017
 #########################################
 # This drives the solving of a masyu puzzle
 #
