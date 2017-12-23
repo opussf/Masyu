@@ -73,7 +73,7 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" fails if not string """
 		self.masyuBoard.initBoard( 3 )
 		self.assertEquals( type( self.masyuBoard.__str__() ), type( "" ), "Should return a string" )
-	def test_Print_value( self ):
+	def notest_Print_value( self ):
 		""" string shows board """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.assertEquals( self.masyuBoard.__str__(), ". w b\n     \n. . .\n     \nb . ." )
@@ -140,7 +140,7 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setExit_takesNumber_invalid( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, 16 )
-	def test_Print_showsLine( self ):
+	def notest_Print_showsLine( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 2, 0, 'e' )
 		self.masyuBoard.setExit( 2, 0, 's' )

@@ -64,8 +64,8 @@ class MasyuBoard( object ):
 		return( y*self.xSize + x )
 	def __str__( self ):
 		#yaya = [ [ self.baseBoard[] ] ]
-		out = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
-		out = map( "".join, out )
+		outBase = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
+		out = map( "".join, outBase )
 		return "\n".join( out )
 	def getValue( self, x, y ):
 		""" returns a tuple of the base and line boards """
