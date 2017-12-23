@@ -15,13 +15,14 @@ class MasyuBoard( object ):
 		(not) nesw << 4 + nesw
 
 	"""
+	NORTH = 1
+	EAST  = 2
+	SOUTH = 4
+	WEST  = 8
+	dirValues = { 'w': WEST, 's': SOUTH, 'e': EAST, 'n': NORTH }
+	dirLetters = dirValues.keys()
 	def __init__( self, debug=False ):
 		self.debug = debug
-#		self.NORTH = 1
-#		self.EAST  = 2
-#		self.SOUTH = 4
-#		self.WEST  = 8
-
 	def initBoard( self, xSize=None, ySize=None, line=None ):
 		""" init the board,
 		xSize @parameter (int or None): xSize of the puzzle.
@@ -56,22 +57,42 @@ class MasyuBoard( object ):
 		""" reads a puzzle file, and inits the board """
 		puzzle = file( puzzleFile, "r" ).read()
 		self.initBoard( line=puzzle )
+	def __offset( self, x, y ):
+		""" private function.  return the offset, or raise a valueerror """
+		if( x >= self.xSize or y >= self.ySize ):
+			raise( ValueError )
+		return( y*self.xSize + x )
 	def __str__( self ):
 		#yaya = [ [ self.baseBoard[] ] ]
-		out = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
-		out = map( "".join, out )
+		outBase = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
+		out = map( "".join, outBase )
 		return "\n".join( out )
 	def getValue( self, x, y ):
 		""" returns a tuple of the base and line boards """
-		if( x >= self.xSize or y >= self.ySize ):
-			raise( ValueError )
-		offset = y*self.xSize + x
+		offset = self.__offset( x, y )
+#		if( x >= self.xSize or y >= self.ySize ):
+#			raise( ValueError )
+#		offset = y*self.xSize + x
 		return( (self.baseBoard[offset], self.lineBoard[offset]) )
 	def setValue( self, x, y, value=None ):
 		""" sets a value """
-		if( x >= self.xSize or y >= self.ySize ):
-			raise( ValueError )
+		offset = self.__offset( x, y )
 		if( value == None ):
 			value = "."
-		offset = y*self.xSize + x
 		self.baseBoard[offset] = value
+	def setExit( self, x, y, value=None ):
+		""" sets the exit flag for value direction.
+		value @parameter (binary, single char, None) value to set.
+		"""
+		offset = self.__offset( x, y )
+		if( isinstance( value, str ) ):
+			#print "value is str"
+			value = value.lower()
+			if( value[0] in self.dirLetters ):
+				value = self.dirValues[value[0]]
+			else:
+				raise( ValueError )
+		if( value < 0 or value > 15 ):
+			raise( ValueError )
+		self.lineBoard[offset] = self.lineBoard[offset] | value
+

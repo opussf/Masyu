@@ -73,10 +73,10 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" fails if not string """
 		self.masyuBoard.initBoard( 3 )
 		self.assertEquals( type( self.masyuBoard.__str__() ), type( "" ), "Should return a string" )
-	def test_Print_value( self ):
+	def notest_Print_value( self ):
 		""" string shows board """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
-		self.assertEquals( self.masyuBoard.__str__(), ".wb\n...\nb.." )
+		self.assertEquals( self.masyuBoard.__str__(), ". w b\n     \n. . .\n     \nb . ." )
 	def test_setValue_goodRange_black( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setValue( 0, 0, "b" )
@@ -99,7 +99,52 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setValue_outsideRange_yHigh( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setValue, 0, 3, "b" )
-
+	def test_setExit_goodRange_single( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 2, 0, 'w' )
+		self.assertEquals( self.masyuBoard.lineBoard[2], 8 )
+	def test_setExit_goodRange_multiple( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 2, 0, 'w' )
+		self.masyuBoard.setExit( 2, 0, 's' )
+		self.assertEquals( self.masyuBoard.lineBoard[2], 12 )
+	def test_setExit_outsideRange_xHigh( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 3, "n" )
+	def test_setExit_outsideRange_yHigh( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 3, "n" )
+	def test_setExit_takesLetter( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, "s" )
+		self.assertEquals( self.masyuBoard.lineBoard[0], 4 )
+	def test_setExit_secondLetterIsIgnored( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, "se" )
+		self.assertEquals( self.masyuBoard.lineBoard[0], 4 )
+	def test_setExit_invalidLetter( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, "z" )
+	def test_setExit_uppercaseLetter( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, "S" )
+		self.assertEquals( self.masyuBoard.lineBoard[0], 4 )
+	def test_setExit_takesNumber( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.lineBoard[0], 2 )
+	def test_setExit_takesNumber_complex( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST | self.masyuBoard.SOUTH )
+		self.assertEquals( self.masyuBoard.lineBoard[0], 6 )
+	def test_setExit_takesNumber_invalid( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, 16 )
+	def notest_Print_showsLine( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.masyuBoard.setExit( 2, 0, 'e' )
+		self.masyuBoard.setExit( 2, 0, 's' )
+		self.assertEquals( self.masyuBoard.__str__(), u". w\u2500b\n    \u2502\n. . .\n     \nb . ." )
 
 def suite():
 	suite = unittest.TestSuite()
