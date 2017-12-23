@@ -137,6 +137,9 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST | self.masyuBoard.SOUTH )
 		self.assertEquals( self.masyuBoard.lineBoard[0], 6 )
+	def test_setExit_takesNumber_invalid( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, 16 )
 	def test_Print_showsLine( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 2, 0, 'e' )
