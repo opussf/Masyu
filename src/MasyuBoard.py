@@ -99,4 +99,10 @@ class MasyuBoard( object ):
 				raise( ValueError )
 		if( value < 0 or value > 15 ):
 			raise( ValueError )
+		# raise exception if the value tries to exit the board.
+		if( x == 0 and ( value & self.WEST ) ) or \
+				( y == 0 and ( value & self.NORTH ) ) or \
+				( x == self.xSize - 1 and ( value & self.EAST ) ) or \
+				( y == self.ySize - 1 and ( value & self.SOUTH ) ):
+			raise( ValueError )
 		self.lineBoard[offset] = self.lineBoard[offset] | value

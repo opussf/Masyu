@@ -143,6 +143,22 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setExit_takesNumber_invalid( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, 16 )
+	def test_setExit_exitsBoard_north( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, self.masyuBoard.NORTH )
+	def test_setExit_exitsBoard_south( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 2, 2, self.masyuBoard.SOUTH )
+	def test_setExit_exitsBoard_east( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 2, 2, self.masyuBoard.EAST )
+	def test_setExit_exitsBoard_west( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, self.masyuBoard.WEST )
+	def test_setExit_exitsBoard_2values( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setExit, 2, 0, self.masyuBoard.EAST | self.masyuBoard.NORTH )
+
 	def notest_Print_showsLine( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 2, 0, 'e' )
