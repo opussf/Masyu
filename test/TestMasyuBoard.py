@@ -80,11 +80,6 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" string shows board """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.assertEquals( self.masyuBoard.__str__(), ". w b\n     \n. . .\n     \nb . ." )
-	def test_Print_value_8x8( self ):
-		""" larger board """
-		self.masyuBoard.loadFromFile( "puzzles/puzzle_8x8_easy_01.txt" )
-		self.assertEquals( self.masyuBoard.__str__(),
-				". . . . . . . .\n" )
 	def test_setValue_goodRange_black( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setValue( 0, 0, "b" )
@@ -179,7 +174,6 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 1, 1, self.masyuBoard.WEST )
 		self.assertEquals( self.masyuBoard.lineBoard[3], self.masyuBoard.EAST )
-
 	def test_Print_showsLine( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 2, 0, 'w' )
