@@ -67,11 +67,6 @@ class MasyuBoard( object ):
 		if( x >= self.xSize or y >= self.ySize ):
 			raise( ValueError )
 		return( y*self.xSize + x )
-	def __str__( self ):
-		#yaya = [ [ self.baseBoard[] ] ]
-		outBase = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize)] for y in range(self.ySize) ]
-		out = map( "".join, outBase )
-		return "\n".join( out )
 	def getValue( self, x, y ):
 		""" returns a tuple of the base and line boards """
 		offset = self.__offset( x, y )
@@ -85,10 +80,11 @@ class MasyuBoard( object ):
 		if( value == None ):
 			value = "."
 		self.baseBoard[offset] = value
-	def setExit( self, x, y, value=None ):
+	def setExit( self, x, y, value=None, secondary=None ):
 		""" sets the exit flag for value direction.
 		value @parameter (binary, single char, None) value to set.
 		"""
+		#if debug: print( "setExit( %i, %i, %s )" % (x, y, value) )
 		offset = self.__offset( x, y )
 		if( isinstance( value, str ) ):
 			#print "value is str"
@@ -106,3 +102,72 @@ class MasyuBoard( object ):
 				( y == self.ySize - 1 and ( value & self.SOUTH ) ):
 			raise( ValueError )
 		self.lineBoard[offset] = self.lineBoard[offset] | value
+		if( not secondary ):
+			if( value & self.NORTH ):
+				#if debug: print( "Going NORTH. Set (%i,%i) to SOUTH" % (x, y-1) )
+				self.setExit( x, y-1, self.SOUTH, True )
+			elif( value & self.EAST ):
+				#if debug: print( "Going EAST. Set (%i,%i) to WEST" % (x+1,y) )
+				self.setExit( x+1, y, self.WEST, True )
+			elif( value & self.SOUTH ):
+				#if debug: print( "Going SOUTH. Set (%i,%i) to NORTH" % (x,y+1) )
+				self.setExit( x, y+1, self.NORTH, True )
+			elif( value & self.WEST ):
+				#if debug: print( "Going WEST. Set (%i,%i) to EAST" % (x-1,y) )
+				self.setExit( x-1, y, self.EAST, True )
+	def __str__( self ):
+		""" convert the object to a string
+		This may look convoluted, and I'm sure it is.
+		@TODO: revisit this to make it cleaner.
+		"""
+		# build the base board list of lists
+		#  [['.', 'w', 'b'], ['.', '.', '.'], ['b', '.', '.']]
+		outBase = [ [ self.baseBoard[y*self.xSize + x] for x in range(self.xSize) ] for y in range(self.ySize) ]
+		#print( "outBase: %s" % ( outBase, ) )
+
+		# build the east-west list of lists
+		#  [[' ', '-'], [' ', ' '], [' ', ' ']]
+		ew = [ [ ((self.lineBoard[y*self.xSize + x] & self.EAST) or (self.lineBoard[y*self.xSize + x + 1] & self.WEST)) and "-" or " " \
+				for x in range( self.xSize - 1 ) ] for y in range( self.ySize ) ]
+		#print( "ew: %s" % (ew,) )
+
+		# build the north-south list of lists
+		#  [[' ', ' ', '|'], [' ', ' ', ' ']]
+		ns = [ [ ((self.lineBoard[y*self.xSize + x] & self.SOUTH) or (self.lineBoard[(y+1)*self.xSize + x] & self.NORTH)) and "|" or " " \
+				for x in range( self.xSize ) ] for y in range( self.ySize - 1 ) ]
+		#print( "ns: %s" % (ns,) )
+
+		# expand the ns list to include spacing spaces
+		#  [[' ', ' ', ' ', ' ', '|'], [' ', ' ', ' ', ' ', ' ']]
+		ns = map( lambda x: x.split("x"), map( "x x".join, ns ) )
+		#print( "ns: %s" % (ns,) )
+
+		# build a zipped list of lists, base board values paired with east-west values
+		#  [(['.', 'w', 'b'], [' ', '-']), (['.', '.', '.'], [' ', ' ']), (['b', '.', '.'], [' ', ' '])]
+		zipped = zip( outBase, ew )
+		#print( "zipped: %s" % ( zipped,) )
+
+		# alternating merge of the values in the tuples.
+		#  [['.', ' ', 'w', ' ', 'b'], ['.', ' ', '.', ' ', '.'], ['b', ' ', '.', ' ', '.']]
+		mapped = []
+		for y in range( self.ySize ):
+			row = []
+			for x in range( self.xSize ):
+				#print( x, y, outBase[y][x] )
+				row.append( outBase[y][x] )
+				if( x < self.xSize - 1 ):
+					row.append( ew[y][x] )
+			mapped.append( row )
+		#print( "mapped: %s" % ( mapped, ) )
+
+		# merge in the north-south rows
+		#  [['.', ' ', 'w', ' ', 'b'], ['  ', '  ', ' '], ['.', ' ', '.', ' ', '.'], ['  ', '  ', ' '], ['b', ' ', '.', ' ', '.']]
+		merged = []
+		for i in range( len( ns ) ):
+			merged.append( mapped[i] )
+			merged.append( ns[i] )
+		merged.append( mapped[-1] )
+		#print( "merged: %s" % (merged,) )
+
+		out = map( "".join, merged )
+		return "\n".join( out )
