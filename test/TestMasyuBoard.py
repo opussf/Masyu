@@ -180,6 +180,15 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 2, 0, 's' )
 		#self.assertEquals( self.masyuBoard.__str__(), u". w\u2500b\n    \u2502\n. . .\n     \nb . ." )
 		self.assertEquals( self.masyuBoard.__str__(), u". w-b\n    |\n. . .\n     \nb . ." )
+	def test_Print_completed_puzzle( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.masyuBoard.setExit( 1, 0, self.masyuBoard.EAST | self.masyuBoard.WEST )
+		self.masyuBoard.setExit( 2, 0, "s" )
+		self.masyuBoard.setExit( 2, 1, "s" )
+		self.masyuBoard.setExit( 0, 2, self.masyuBoard.NORTH | self.masyuBoard.EAST )
+		self.masyuBoard.setExit( 0, 1, "n" )
+		self.masyuBoard.setExit( 1, 2, "e" )
+		self.assertEquals( self.masyuBoard.__str__(), ".-w-b\n|   |\n. . .\n|   |\nb-.-." )
 
 def suite():
 	suite = unittest.TestSuite()

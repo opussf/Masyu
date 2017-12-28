@@ -119,6 +119,8 @@ class MasyuBoard( object ):
 		""" convert the object to a string
 		This may look convoluted, and I'm sure it is.
 		@TODO: revisit this to make it cleaner.
+		@TODO: revisit this to make corners replace empty squares
+		@TODO: revisit this to make straight lines replace empty squares
 		"""
 		# build the base board list of lists
 		#  [['.', 'w', 'b'], ['.', '.', '.'], ['b', '.', '.']]
