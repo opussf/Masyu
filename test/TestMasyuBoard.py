@@ -223,15 +223,6 @@ class TestMasyuBoard( unittest.TestCase ):
 		expectedValue = (self.masyuBoard.NORTH | self.masyuBoard.SOUTH) << 4
 		expectedValue = expectedValue | self.masyuBoard.EAST | self.masyuBoard.WEST
 
-		print( "expectedValue: ", expectedValue )
-		exits = self.masyuBoard.lineBoard[4]
-
-		noExits = exits >> 4
-		exits = exits & 15
-
-		print( "noExits :", noExits )
-		print( "exits   :", exits )
-
 		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
 
 	def test_setExit_doesNotChangeNoExit( self ):
@@ -242,16 +233,11 @@ class TestMasyuBoard( unittest.TestCase ):
 		expectedValue = (self.masyuBoard.EAST | self.masyuBoard.WEST) << 4
 		expectedValue = expectedValue | self.masyuBoard.NORTH | self.masyuBoard.SOUTH
 
-		print( "expectedValue: ", expectedValue )
-		exits = self.masyuBoard.lineBoard[4]
-
-		noExits = exits >> 4
-		exits = exits & 15
-
-		print( "noExits :", noExits )
-		print( "exits   :", exits )
-
 		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
+	def test_setNoExit_doesNotErrorOnSettingNoExitOnEdge_north( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 0, "n" )
+		self.assertEquals( self.masyuBoard.NORTH << 4, self.masyuBoard.lineBoard[1] )
 
 
 def suite():

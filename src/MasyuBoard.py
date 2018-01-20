@@ -12,6 +12,8 @@ class MasyuBoard( object ):
 	The Masyu board holds the puzzle (dotBoard), allows loading / saving the board to storage, prints the board to a string,
 	allows interaction with the board ( setExit, setNoExit, getValue ).
 
+	Coordinate system is 0 based.  (0,0) is the upper left (north-west) corner
+
 	@ToDecide does this facilitate following lines?
 
 	dotBoard is a single list that holds the initial board.  The dots are placed here.
@@ -26,6 +28,7 @@ class MasyuBoard( object ):
 	EAST  = 2  # noEast  =  32
 	SOUTH = 4  # noSouth =  64
 	WEST  = 8  # noWest  = 128
+
 	dirValues = { 'w': WEST, 's': SOUTH, 'e': EAST, 'n': NORTH }
 	dirLetters = dirValues.keys()
 	def __init__( self, debug=False ):
@@ -63,13 +66,19 @@ class MasyuBoard( object ):
 			self.baseBoard = [ brokenLine[y][x] for y in range(self.ySize) for x in range(self.xSize) ]
 		if self.debug:
 			print self.baseBoard
+
+
+
+
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
 		puzzle = file( puzzleFile, "r" ).read()
 		self.initBoard( line=puzzle )
 	def __offset( self, x, y ):
-		""" private function.  return the offset, or raise a valueerror """
-		if( x >= self.xSize or y >= self.ySize ):
+		""" private function.  return the offset, or raise a ValueError """
+		print( "__offset( %i, %i )" % ( x, y ) )
+		if( x >= self.xSize or x < 0 or y >= self.ySize or y < 0 ):
+			print( "__offset: raise error" )
 			raise( ValueError )
 		return( y*self.xSize + x )
 	def getValue( self, x, y ):
@@ -91,7 +100,14 @@ class MasyuBoard( object ):
 		secondary @parameter (boolean) False if this is the primary square, True if setting the 'extrance' to the secondary square
 		"""
 		#if debug: print( "setExit( %i, %i, %s )" % (x, y, value) )
-		offset = self.__offset( x, y )
+		try:
+			offset = self.__offset( x, y )
+		except ValueError as e:
+			if( not secondary ):
+				raise( e )
+			else:
+				print( "Found an exception during the secondary part.  Ignore it." )
+				return
 		if( isinstance( value, str ) ):  # did I get a string?
 			#print "value is str"
 			value = value.lower()
@@ -126,7 +142,15 @@ class MasyuBoard( object ):
 		value @parameter (binary, single char, None) direction to set to no exit
 		secondary @parameter (boolean) False if this is the primary square, True if setting the 'no exit' to a secondary square
 		"""
-		offset = self.__offset( x, y )
+		try:
+			offset = self.__offset( x, y )
+		except ValueError as e:
+			if( not secondary ):
+				raise( e )
+			else:
+				print( "Found an exception during the secondary part, ignore it." )
+				return
+		print("setNoExit( %i, %i ) offset=%i" % ( x, y, offset ) )
 		if( isinstance( value, str ) ):  # did I get a string?
 			value = value.lower()
 			if( value[0] in self.dirLetters ):
