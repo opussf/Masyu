@@ -28,7 +28,6 @@ class MasyuBoard( object ):
 	EAST  = 2  # noEast  =  32
 	SOUTH = 4  # noSouth =  64
 	WEST  = 8  # noWest  = 128
-
 	dirValues = { 'w': WEST, 's': SOUTH, 'e': EAST, 'n': NORTH }
 	dirLetters = dirValues.keys()
 	def __init__( self, debug=False ):
@@ -66,19 +65,16 @@ class MasyuBoard( object ):
 			self.baseBoard = [ brokenLine[y][x] for y in range(self.ySize) for x in range(self.xSize) ]
 		if self.debug:
 			print self.baseBoard
-
-
-
-
+		# @TODO: set noexit flags around the edge of the board on init.
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
 		puzzle = file( puzzleFile, "r" ).read()
 		self.initBoard( line=puzzle )
 	def __offset( self, x, y ):
 		""" private function.  return the offset, or raise a ValueError """
-		print( "__offset( %i, %i )" % ( x, y ) )
+		#print( "__offset( %i, %i )" % ( x, y ) )
 		if( x >= self.xSize or x < 0 or y >= self.ySize or y < 0 ):
-			print( "__offset: raise error" )
+			#print( "__offset: raise error" )
 			raise( ValueError )
 		return( y*self.xSize + x )
 	def getValue( self, x, y ):
@@ -106,7 +102,7 @@ class MasyuBoard( object ):
 			if( not secondary ):
 				raise( e )
 			else:
-				print( "Found an exception during the secondary part.  Ignore it." )
+				#print( "Found an exception during the secondary part.  Ignore it." )
 				return
 		if( isinstance( value, str ) ):  # did I get a string?
 			#print "value is str"
@@ -148,9 +144,9 @@ class MasyuBoard( object ):
 			if( not secondary ):
 				raise( e )
 			else:
-				print( "Found an exception during the secondary part, ignore it." )
+				#print( "Found an exception during the secondary part, ignore it." )
 				return
-		print("setNoExit( %i, %i ) offset=%i" % ( x, y, offset ) )
+		#print("setNoExit( %i, %i ) offset=%i" % ( x, y, offset ) )
 		if( isinstance( value, str ) ):  # did I get a string?
 			value = value.lower()
 			if( value[0] in self.dirLetters ):
