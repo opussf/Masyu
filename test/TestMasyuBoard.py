@@ -189,6 +189,70 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 0, 1, "n" )
 		self.masyuBoard.setExit( 1, 2, "e" )
 		self.assertEquals( self.masyuBoard.__str__(), ".-w-b\n|   |\n. . .\n|   |\nb-.-." )
+	def test_setNoExit_goodRange_single( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, "n" )
+		self.assertEquals( self.masyuBoard.lineBoard[4], self.masyuBoard.NORTH << 4 )
+	def test_setNoExit_invalidLetter( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setNoExit, 0, 0, "z" )
+	def test_setNoExit_takesNumber_invalid( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setNoExit, 0, 0, 16 )
+	def test_setNoExit_setsNoExitForNextLocation_north( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.NORTH )
+		self.assertEquals( self.masyuBoard.lineBoard[1], self.masyuBoard.SOUTH << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_south( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.SOUTH )
+		self.assertEquals( self.masyuBoard.lineBoard[7], self.masyuBoard.NORTH << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_east( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.lineBoard[5], self.masyuBoard.WEST << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_west( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.WEST )
+		self.assertEquals( self.masyuBoard.lineBoard[3], self.masyuBoard.EAST << 4 )
+	def test_setNoExit_doesNotChangeExit( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 1, 1, self.masyuBoard.EAST | self.masyuBoard.WEST )  # exit is e-w
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.NORTH | self.masyuBoard.SOUTH )
+
+		expectedValue = (self.masyuBoard.NORTH | self.masyuBoard.SOUTH) << 4
+		expectedValue = expectedValue | self.masyuBoard.EAST | self.masyuBoard.WEST
+
+		print( "expectedValue: ", expectedValue )
+		exits = self.masyuBoard.lineBoard[4]
+
+		noExits = exits >> 4
+		exits = exits & 15
+
+		print( "noExits :", noExits )
+		print( "exits   :", exits )
+
+		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
+
+	def test_setExit_doesNotChangeNoExit( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.EAST | self.masyuBoard.WEST ) # don't exit east or west
+		self.masyuBoard.setExit( 1, 1, self.masyuBoard.NORTH | self.masyuBoard.SOUTH )
+
+		expectedValue = (self.masyuBoard.EAST | self.masyuBoard.WEST) << 4
+		expectedValue = expectedValue | self.masyuBoard.NORTH | self.masyuBoard.SOUTH
+
+		print( "expectedValue: ", expectedValue )
+		exits = self.masyuBoard.lineBoard[4]
+
+		noExits = exits >> 4
+		exits = exits & 15
+
+		print( "noExits :", noExits )
+		print( "exits   :", exits )
+
+		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
+
 
 def suite():
 	suite = unittest.TestSuite()
