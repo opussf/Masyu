@@ -34,9 +34,12 @@ class TestSolveMasyu( unittest.TestCase ):
 		#self.fail( "Eh?" )
 """
 	def test_Masyu_blackDot_( self ):
+		print "balckDot_"
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_5x5_single_black.txt" )
 		self.Masyu.dotBlack( 2, 2 )
-
+	def test_Masyu_solveBoard( self ):
+		self.Masyu.solveBoard()
+"""
 
 def suite():
 	suite = unittest.TestSuite()
