@@ -22,11 +22,17 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_blackDot_vertical_01( self ):
 		""" finds a vertical component """
 		self.Masyu.dotBlack( 0, 2 )
-		self.assertEquals( self.Masyu.board.getValue( 0, 0 )[1], self.Masyu.board.SOUTH )
+		self.assertEquals( self.Masyu.board.getValue( 0, 0 )[1],
+				( self.Masyu.board.NORTH | self.Masyu.board.WEST ) << 4 | self.Masyu.board.SOUTH )
 	def test_Masyu_blackDot_horizontal_01( self ):
 		""" find a horizontal component """
 		self.Masyu.dotBlack( 0, 2 )
-		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1], self.Masyu.board.WEST )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( self.Masyu.board.SOUTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.WEST )
+	def test_Masyu_blackDot_( self ):
+		pass
+		#self.fail( "Eh?" )
+"""
 	def test_Masyu_blackDot_( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_5x5_single_black.txt" )
 		self.Masyu.dotBlack( 2, 2 )

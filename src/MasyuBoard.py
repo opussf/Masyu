@@ -65,6 +65,14 @@ class MasyuBoard( object ):
 			self.baseBoard = [ brokenLine[y][x] for y in range(self.ySize) for x in range(self.xSize) ]
 		if self.debug:
 			print self.baseBoard
+
+		for x in range( self.xSize ):
+			self.setNoExit( x, 0, self.NORTH )
+			self.setNoExit( x, self.ySize-1, self.SOUTH )
+		for y in range( self.ySize ):
+			self.setNoExit( 0, y, self.WEST )
+			self.setNoExit( self.xSize-1, y, self.EAST )
+
 		# @TODO: set noexit flags around the edge of the board on init.
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
