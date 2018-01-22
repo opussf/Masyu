@@ -96,9 +96,16 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
 
+	def test_Masyu_whiteDot_onTheEdge_North( self ):
+		self.Masyu.dotWhite( 1, 0 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
 
-	def test_Masyu_SolveBoard( self ):
+	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
+		self.Masyu.solveBoard()
+	def test_Masyu_SolveBoard_02( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-6.txt" )
 		self.Masyu.solveBoard()
 
 
