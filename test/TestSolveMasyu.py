@@ -10,11 +10,11 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_hasBoard( self ):
 		self.assertTrue( self.Masyu.board )
 	def test_Masyu_dot_empty( self ):
-		self.assertEquals( self.Masyu.dot( 0, 0 ), "empty" )
+		self.assertFalse( self.Masyu.dot( 0, 0 ) )
 	def test_Masyu_dot_black( self ):
-		self.assertEquals( self.Masyu.dot( 2, 0 ), "black" )
+		self.assertTrue( self.Masyu.dot( 2, 0 ) )
 	def test_Masyu_dot_white( self ):
-		self.assertEquals( self.Masyu.dot( 1, 0 ), "white" )
+		self.assertTrue( self.Masyu.dot( 1, 0 ) )
 	def test_Masyu_blackDot_vertical_01( self ):
 		""" finds a vertical component """
 		self.Masyu.dotBlack( 0, 2 )
@@ -25,7 +25,6 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotBlack( 0, 2 )
 		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
 				( self.Masyu.board.SOUTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.WEST )
-
 	def test_Masyu_blackDot_vertical_02( self ):
 		self.Masyu.dotBlack( 2, 0 )
 		self.assertEquals( self.Masyu.board.getValue( 0, 0 )[1],
@@ -82,6 +81,20 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotBlack( 2, 2 )
 		self.assertEquals( self.Masyu.board.getValue( 0, 2 )[1],
 				( self.Masyu.board.WEST << 4 | self.Masyu.board.EAST ) )
+	def test_Masyu_blackDot_falseOnSolved( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_00.txt" )
+		self.Masyu.dotBlack( 2, 0 )
+		self.assertFalse( self.Masyu.dotBlack( 2, 0 ) )
+	def test_Masyu_blackDot_falseOnUnableToSolve( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_5x5_single_black.txt" )
+		self.Masyu.dotBlack( 1, 2 )
+		self.assertFalse( self.Masyu.dotBlack( 1, 2 ) )
+	def test_Masyu_blackDot_sideBySide( self ):
+		self.Masyu.board.initBoard( 6, 6, "..bb..\n......\n......\n......\n......\n......" )
+		self.Masyu.dotBlack( 2, 0 )
+		self.Masyu.dotBlack( 3, 0 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
 
 
 	def test_Masyu_SolveBoard( self ):

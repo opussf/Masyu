@@ -53,7 +53,8 @@ class SolveMasyu( object ):
 			for y in range( self.board.ySize ):
 				for x in range( self.board.xSize ):
 					doAgain = self.dot( x, y ) or doAgain
-			doAgain = False
+					self.logger.debug( "doAgain: %s" % ( doAgain and "True" or "False", ) )
+			self.logger.debug( "End of Loop  >>> doAgain: %s" % ( doAgain and "True" or "False", ) )
 
 	def dot( self, x, y ):
 		""" determine the color of the dot, and call the right function.
@@ -68,7 +69,7 @@ class SolveMasyu( object ):
 			return color
 		else:
 			self.logger.debug( "empty" )
-			return "empty"
+			return False
 
 	def dotBlack( self, x, y ):
 		""" a black dot has to have the line turn 90 degrees.
@@ -79,13 +80,32 @@ class SolveMasyu( object ):
 		"""
 		self.logger.debug( "dotBlack( %i, %i )" % ( x, y ) )
 		change = False
-		possibleDirections = 0
-		impossibleDirections = self.board.getValue( x, y )[1] >> 4
+
+		exitValues = self.board.getValue( x, y )[1]
+		impossibleDirections = exitValues >> 4
+		currentDirections = exitValues & 15
+
+		self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
+		self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
+
+
+		if currentDirections in [ 3, 6, 12, 9 ]:
+			"""
+			NE = 3  ( 0011 )
+			ES = 6  ( 0110 )
+			SW = 12 ( 1100 )
+			WN = 9  ( 1001 )
+			"""
+			self.logger.debug( "this dot is valid, return False" )
+			return False
+
+		possibleDirections = 0  # use this to set possible directions to choose from
 		# look for a horizontal line
 		# look NORTH ( have at least 2 segments to travel )
 		if( not impossibleDirections & self.board.NORTH ):  # north is possible
 			self.logger.debug( "north is possible: 1" )
-			if( not self.board.getValue( x, y-1 )[1] >> 4 & self.board.NORTH ):
+			base, values = self.board.getValue( x, y-1 )
+			if( ( not values >> 4 & self.board.NORTH ) and ( not base == "b" ) ):
 				self.logger.debug( "north is possible: 2" )
 				possibleDirections = possibleDirections | self.board.NORTH
 		if( not possibleDirections & self.board.NORTH ):
@@ -94,7 +114,8 @@ class SolveMasyu( object ):
 		# look EAST
 		if( not impossibleDirections & self.board.EAST ):  # east is possible
 			self.logger.debug( "east is possible: 1" )
-			if( not self.board.getValue( x+1, y )[1] >> 4 & self.board.EAST ):
+			base, values = self.board.getValue( x+1, y )
+			if( ( not values >> 4 & self.board.EAST ) and ( not base == "b" ) ):
 				self.logger.debug( "east is possible: 2" )
 				possibleDirections = possibleDirections | self.board.EAST
 		if( not possibleDirections & self.board.EAST ):
@@ -127,33 +148,57 @@ class SolveMasyu( object ):
 
 		if( ( possibleDirections & self.board.NORTH ) and not ( possibleDirections & self.board.SOUTH ) ):
 			self.logger.debug( "can only go NORTH" )
-			self.board.setExit( x, y, self.board.NORTH )
-			self.board.setExit( x, y-1, self.board.NORTH )
-			self.board.setNoExit( x, y-1, self.board.EAST | self.board.WEST )
-			change = True
+			if( not currentDirections & self.board.NORTH ):
+				self.logger.debug( "not already going NORTH")
+				self.board.setExit( x, y, self.board.NORTH )
+				self.board.setExit( x, y-1, self.board.NORTH )
+				self.board.setNoExit( x, y-1, self.board.EAST | self.board.WEST )
+				change = True
 		if( ( possibleDirections & self.board.SOUTH ) and not ( possibleDirections & self.board.NORTH ) ):
 			self.logger.debug( "can only go SOUTH" )
-			self.board.setExit( x, y, self.board.SOUTH )
-			self.board.setExit( x, y+1, self.board.SOUTH )
-			self.board.setNoExit( x, y+1, self.board.EAST | self.board.WEST )
-			change = True
+			if( not currentDirections & self.board.SOUTH ):
+				self.logger.debug( "not already going SOUTH" )
+				self.board.setExit( x, y, self.board.SOUTH )
+				self.board.setExit( x, y+1, self.board.SOUTH )
+				self.board.setNoExit( x, y+1, self.board.EAST | self.board.WEST )
+				change = True
 
 		if( ( possibleDirections & self.board.EAST ) and not ( possibleDirections & self.board.WEST ) ):
 			self.logger.debug( "can only go EAST" )
-			self.board.setExit( x, y, self.board.EAST )
-			self.board.setExit( x+1, y, self.board.EAST )
-			self.board.setNoExit( x+1, y, self.board.NORTH | self.board.SOUTH )
-			change = True
+			if( not currentDirections & self.board.EAST ):
+				self.logger.debug( "not already going EAST" )
+				self.board.setExit( x, y, self.board.EAST )
+				self.board.setExit( x+1, y, self.board.EAST )
+				self.board.setNoExit( x+1, y, self.board.NORTH | self.board.SOUTH )
+				change = True
 		if( ( possibleDirections & self.board.WEST ) and not ( possibleDirections & self.board.EAST ) ):
 			self.logger.debug( "can only go WEST" )
-			self.board.setExit( x, y, self.board.WEST )
-			self.board.setExit( x-1, y, self.board.WEST )
-			self.board.setNoExit( x-1, y, self.board.NORTH | self.board.SOUTH )
-			change = True
+			if( not currentDirections & self.board.WEST ):
+				self.logger.debug( "not already going WEST" )
+				self.board.setExit( x, y, self.board.WEST )
+				self.board.setExit( x-1, y, self.board.WEST )
+				self.board.setNoExit( x-1, y, self.board.NORTH | self.board.SOUTH )
+				change = True
 
 		self.logger.debug( "\n%s" % self.board )
 
 		return change
 	def dotWhite( self, x, y ):
+		""" a white dot has to have the line go straight through.
+		It also has to have the line turn 90 degrees in one of the 2 connected squares.
+
+		WSEN
+		8421
+		"""
 		self.logger.debug( "dotWhite( %i, %i )" % ( x, y ) )
-		return "white"
+		change = False
+
+		exitValues = self.board.getValue( x, y )[1]
+		impossibleDirections = exitValues >> 4
+		currentDirections = exitValues & 15
+
+		self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
+		self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
+
+
+		return change
