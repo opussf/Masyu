@@ -100,6 +100,22 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotWhite( 1, 0 )
 		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
+	def test_Masyu_whiteDot_hasEntryLine( self ):
+		self.Masyu.board.initBoard( 4, 3, "....\n.ww.\n...." )
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.dotWhite( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
+
+	def test_Masyu_whiteDot_boarderedOnTwoSidesByWhiteDots( self ):
+		""" a white dot in the middle of 2 others cannot go through them.
+		( only 2 white dots can be on a straight line )
+		"""
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n.www.\n.....\n....." )
+		self.Masyu.dotWhite( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.EAST | self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) )
+
 
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )

@@ -195,7 +195,8 @@ class SolveMasyu( object ):
 		""" a white dot has to have the line go straight through.
 		It also has to have the line turn 90 degrees in one of the 2 connected squares.
 		1) If a white dot has a noExit on one side (say on the edge) the line has to go 90 degrees to that direction.
-		2) If a white dot has another white dot on both sides, those white dots are both bocked directions.
+		2) If a white dot already has an exit (from another rule) continue through the dot.
+		3) If a white dot has another white dot on both sides, those white dots are both bocked directions.
 
 		WSEN
 		8421
@@ -233,18 +234,47 @@ class SolveMasyu( object ):
 			self.logger.debug( "cannot go WEST" )
 			possibleDirections = ( self.board.NORTH | self.board.SOUTH )
 
+		# look for partial directions
+		if( ( currentDirections & self.board.NORTH ) or ( currentDirections & self.board.SOUTH ) ): # north or south are already given
+			self.logger.debug( "found a current line going NORTH or SOUTH" )
+			possibleDirections = ( self.board.NORTH | self.board.SOUTH )
+		if( ( currentDirections & self.board.EAST ) or ( currentDirections & self.board.WEST ) ): # east or west are already given
+			self.logger.debug( "found a current line going EAST or WEST" )
+			possibleDirections = ( self.board.EAST | self.board.WEST )
+
+		# look for two other whitedots
+		try:
+			westVal = self.board.getValue( x-1, y )[0]
+			eastVal = self.board.getValue( x+1, y )[0]
+			if( westVal == "w" and eastVal == "w" ):
+				self.logger.debug( "white dots are on both the EAST and the WEST" )
+				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
+		except ValueError:  # a ValueError is expected if on the east or west edge
+			pass
+		try:
+			northVal = self.board.getValue( x, y-1 )[0]
+			southVal = self.board.getValue( x, y+1 )[0]
+			if( northVal == "w" and southVal == "w" ):
+				self.logger.debug( "white dots are on both the NORTH and the SOUTH" )
+				possibleDirections = ( self.board.EAST | self.board.WEST )
+		except ValueError:  # a ValueError is expected if on the north or south edge
+			pass
+
+		# process possibleDirections
 		if( possibleDirections != 0 ):
 			self.logger.debug( "possibleDirections is not 0 (%s)" % (bin( possibleDirections ), ) )
 			if( possibleDirections == self.board.EAST | self.board.WEST ):
 				self.logger.debug( "drawing line EAST and WEST" )
-				self.board.setExit( x, y, possibleDirections )
+				self.board.setExit( x, y, self.board.EAST )
+				self.board.setExit( x, y, self.board.WEST )
 				self.logger.debug( "blocking the other directions" )
 				self.board.setNoExit( x, y, self.board.NORTH )
 				self.board.setNoExit( x, y, self.board.SOUTH )
 				change = True
 			if( possibleDirections == self.board.NORTH | self.board.SOUTH ):
 				self.logger.debug( "drawing line NORTH and SOUTH" )
-				self.board.setExit( x, y, possibleDirections )
+				self.board.setExit( x, y, self.board.NORTH )
+				self.board.setExit( x, y, self.board.SOUTH )
 				self.logger.debug( "blocking the other directions" )
 				self.board.setNoExit( x, y, self.board.EAST )
 				self.board.setNoExit( x, y, self.board.WEST )
