@@ -68,11 +68,10 @@ class SolveMasyu( object ):
 		if square == "b":
 			return self.dotBlack( x, y )
 		elif square == "w":
-			color = self.dotWhite( x, y )
-			#self.logger.debug( "color: %s" % ( color, ) )
-			return color
-		else:
-			self.logger.debug( "empty" )
+			return self.dotWhite( x, y )
+		elif square == ".":
+			return self.dotNone( x, y )
+		else: # maybe this should be an error?
 			return False
 
 	def dotBlack( self, x, y ):
@@ -83,6 +82,7 @@ class SolveMasyu( object ):
 		8421
 		"""
 		self.logger.debug( "dotBlack( %i, %i )" % ( x, y ) )
+		self.logger.info( "\n%s" % ( self.board, ) )
 		change = False
 
 		exitValues = self.board.getValue( x, y )[1]
@@ -106,43 +106,35 @@ class SolveMasyu( object ):
 		possibleDirections = 0  # use this to set possible directions to choose from
 		# look for a horizontal line
 		# look NORTH ( have at least 2 segments to travel )
-		if( not impossibleDirections & self.board.NORTH ):  # north is possible
-			self.logger.debug( "north is possible: 1" )
-			base, values = self.board.getValue( x, y-1 )
-			if( ( not values >> 4 & self.board.NORTH ) and ( not base == "b" ) ):
-				self.logger.debug( "north is possible: 2" )
-				possibleDirections = possibleDirections | self.board.NORTH
-		if( not possibleDirections & self.board.NORTH ):
-			self.logger.debug( "north is not possible. setNoExit" )
-			self.board.setNoExit( x, y, self.board.NORTH )
-		# look EAST
-		if( not impossibleDirections & self.board.EAST ):  # east is possible
-			self.logger.debug( "east is possible: 1" )
-			base, values = self.board.getValue( x+1, y )
-			if( ( not values >> 4 & self.board.EAST ) and ( not base == "b" ) ):
-				self.logger.debug( "east is possible: 2" )
-				possibleDirections = possibleDirections | self.board.EAST
-		if( not possibleDirections & self.board.EAST ):
-			self.logger.debug( "east is not possible. setNoExit" )
-			self.board.setNoExit( x, y, self.board.EAST )
-		# look SOUTH
-		if( not impossibleDirections & self.board.SOUTH ):  # south is possible
-			self.logger.debug( "south is possible: 1" )
-			if( not self.board.getValue( x, y+1 )[1] >> 4 & self.board.SOUTH ):
-				self.logger.debug( "south is possible: 2" )
-				possibleDirections = possibleDirections | self.board.SOUTH
-		if( not possibleDirections & self.board.SOUTH ):
-			self.logger.debug( "south is not possible. setNoExit" )
-			self.board.setNoExit( x, y, self.board.SOUTH )
-		# look WEST
-		if( not impossibleDirections & self.board.WEST ):  # west is possible
-			self.logger.debug( "west is possible: 1" )
-			if( not self.board.getValue( x-1, y )[1] >> 4 & self.board.WEST ):
-				self.logger.debug( "west is possible: 2" )
-				possibleDirections = possibleDirections | self.board.WEST
-		if( not possibleDirections & self.board.WEST ):
-			self.logger.debug( "west is not possible. setNoExit" )
-			self.board.setNoExit( x, y, self.board.WEST )
+
+		control = { self.board.NORTH : { "name": "NORTH", "offsetX": 0, "offsetY": -1, "b": self.board.EAST | self.board.WEST },
+				self.board.EAST : { "name": "EAST", "offsetX": 1, "offsetY": 0, "b": self.board.NORTH | self.board.SOUTH },
+				self.board.SOUTH : { "name": "SOUTH", "offsetX": 0, "offsetY": 1, "b": self.board.EAST | self.board.WEST },
+				self.board.WEST : { "name": "WEST", "offsetX": -1, "offsetY": 0, "b": self.board.NORTH | self.board.SOUTH }
+				}
+
+		for checkDir in control:
+			struct = control[checkDir]
+			self.logger.debug( "Checking %s (%s)" % ( struct["name"], bin( checkDir ) ) )
+			if( not impossibleDirections & checkDir ):  # this direction is possible
+				self.logger.debug( "%s is possible: 1" % ( struct["name"], ) )
+				base, values = self.board.getValue( x+struct["offsetX"], y+struct["offsetY"] )
+				self.logger.debug( "check neighbor" )
+				self.logger.debug( "values(%s) & 'b'(%s): %s" % ( bin( values ), bin( struct["b"] ), bin( values & struct["b"] ) ) )
+				if( base == "b" ):  # cannot go through a neighbor black dot
+					self.logger.debug( "Found another black dot to the %s. Set noExit" % ( struct["name"], ) )
+					self.board.setNoExit( x, y, checkDir )
+				elif( ( values >> 4 & checkDir ) ):  # neighbor cannot exit in the direction we need to go
+					# 1000 & 1000 = 1000  (true) 0000 & 1000 = 0 (false)
+					self.logger.debug( "Cannot exit to the %s. Set noExit" % ( struct["name"], ) )
+					self.board.setNoExit( x, y, checkDir )
+
+				else:  # all non directions are eliminated
+					possibleDirections = possibleDirections | checkDir  # set this direciton as possible
+					self.logger.debug( "Added %s to possibleDirections (%s)" % ( struct["name"], bin( possibleDirections ) ) )
+			if( not possibleDirections & checkDir ):  # 0001 & 0001 = 1,
+				self.logger.debug( "%s is not possible, setNoExit" % ( struct["name"], ) )
+				self.board.setNoExit( x, y, checkDir )
 
 		self.logger.debug( "possible directions: %5s %5s %5s %5s" % (
 			(possibleDirections & self.board.NORTH) and "NORTH" or "",
@@ -196,7 +188,8 @@ class SolveMasyu( object ):
 		It also has to have the line turn 90 degrees in one of the 2 connected squares.
 		1) If a white dot has a noExit on one side (say on the edge) the line has to go 90 degrees to that direction.
 		2) If a white dot already has an exit (from another rule) continue through the dot.
-		3) If a white dot has another white dot on both sides, those white dots are both bocked directions.
+		3) If a white dot has another white dot on both sides, those white dots are both blocked directions.
+		4) If a white dot has a long line ( next square goes straight ), the opposite direction can be blocked
 
 		WSEN
 		8421
@@ -282,5 +275,69 @@ class SolveMasyu( object ):
 
 
 		#self.logger.debug( "\n%s" % self.board )
+
+		return change
+
+	def __oneCount( self, val ):
+		count = 0
+		while val > 0:
+			if val & 1:
+				count += 1
+			val = val >> 1
+		return count
+
+	def dotNone( self, x, y ):
+		""" 'empty' dots follow a few rules as well.
+		1) if a line enters it, with only one exit, use that exit.
+		2) if there are 3 noExits, set the 4th noExit. ( no way to exit if entered )
+		3) if there are 2 used exits, make sure that the other directions are marked as noExit
+		"""
+		self.logger.debug( "dotNone( %i, %i )" % ( x, y ) )
+		change = False
+
+		exitValues = self.board.getValue( x, y )[1]
+		impossibleDirections = exitValues >> 4
+		currentDirections = exitValues & 15
+
+		self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
+		self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
+		missingDirections = 15 - ( impossibleDirections ^ currentDirections )  # directions not used.
+		""" 0101 ^ 1000 = 1101    1101 ^ 1111 = 0010
+		"""
+
+		currentDirectionCount = self.__oneCount( currentDirections )
+		impossibleDirectionCount = self.__oneCount( impossibleDirections )
+
+		self.logger.debug( "currentDirectionCount   : %i" % ( currentDirectionCount, ) )
+		self.logger.debug( "impossibleDirectionCount: %i" % ( impossibleDirectionCount, ) )
+		self.logger.debug( "missingDirections   : %s" % ( bin( missingDirections ), ) )
+
+		# 1) single line, 2 impossible exits
+		if( currentDirectionCount == 1 and impossibleDirectionCount == 2 ):
+			self.logger.debug( "dot has a line, and a single exit available." )
+			self.board.setExit( x, y, missingDirections )
+			change = True
+		# 2) 3 noExits
+		if( impossibleDirectionCount == 3 ):
+			self.logger.debug( "dot has 3 noExits" )
+			self.board.setNoExit( x, y, missingDirections )
+			change = True
+		# 3)
+		if( currentDirectionCount == 2 and impossibleDirectionCount != 2 ):
+			self.logger.debug( "dot has 2 lines, need to set the final exit." )
+			if( missingDirections & self.board.NORTH ):
+				self.logger.debug( "2 lines, set NORTH exit" )
+				self.board.setNoExit( x, y, self.board.NORTH )
+			if( missingDirections & self.board.EAST ):
+				self.logger.debug( "2 lines, set EAST exit" )
+				self.board.setNoExit( x, y, self.board.EAST )
+			if( missingDirections & self.board.SOUTH ):
+				self.logger.debug( "2 lines, set SOUTH exit" )
+				self.board.setNoExit( x, y, self.board.SOUTH )
+			if( missingDirections & self.board.WEST ):
+				self.logger.debug( "2 lines, set WEST exit" )
+				self.board.setNoExit( x, y, self.board.WEST )
+			self.board.setNoExit( x, y, missingDirections )
+			change = True
 
 		return change
