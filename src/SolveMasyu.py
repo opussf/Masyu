@@ -363,7 +363,25 @@ class SolveMasyu( object ):
 				endX, endY = self.followLine( x, y )
 				self.logger.debug( "Line starting at ( %i, %i ) ends at ( %i, %i )" % ( x, y, endX, endY ) )
 				distance = abs( endX - x ) + abs( endY - y )
-
+				if( distance == 1 ):
+					if( x == endX ):
+						if( endY > y and ( not impossibleDirections & self.board.SOUTH ) ):
+							self.logger.debug( "no south" )
+							self.board.setNoExit( x, y, self.board.SOUTH )
+							change = True
+						if( endY < y and ( not impossibleDirections & self.board.NORTH ) ):
+							self.logger.debug( "no north" )
+							self.board.setNoExit( x, y, self.board.NORTH )
+							change = True
+					if( y == endY ):
+						if( endX > x and ( not impossibleDirections & self.board.EAST ) ):
+							self.logger.debug( "no east" )
+							self.board.setNoExit( x, y, self.board.EAST )
+							change = True
+						if( endX < x and ( not impossibleDirections & self.board.WEST ) ):
+							self.logger.debug( "no west" )
+							self.board.setNoExit( x, y, self.board.WEST )
+							change = True
 
 
 
@@ -376,16 +394,16 @@ class SolveMasyu( object ):
 		if( currentDirectionCount == 2 and impossibleDirectionCount != 2 ):
 			self.logger.debug( "dot has 2 lines, need to set the final exit." )
 			if( missingDirections & self.board.NORTH ):
-				self.logger.debug( "2 lines, set NORTH exit" )
+				self.logger.debug( "2 lines, set NORTH noexit" )
 				self.board.setNoExit( x, y, self.board.NORTH )
 			if( missingDirections & self.board.EAST ):
-				self.logger.debug( "2 lines, set EAST exit" )
+				self.logger.debug( "2 lines, set EAST noexit" )
 				self.board.setNoExit( x, y, self.board.EAST )
 			if( missingDirections & self.board.SOUTH ):
-				self.logger.debug( "2 lines, set SOUTH exit" )
+				self.logger.debug( "2 lines, set SOUTH noexit" )
 				self.board.setNoExit( x, y, self.board.SOUTH )
 			if( missingDirections & self.board.WEST ):
-				self.logger.debug( "2 lines, set WEST exit" )
+				self.logger.debug( "2 lines, set WEST noexit" )
 				self.board.setNoExit( x, y, self.board.WEST )
 			self.board.setNoExit( x, y, missingDirections )
 			change = True

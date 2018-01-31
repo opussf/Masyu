@@ -222,14 +222,12 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.board.setExit( 1, 0, self.Masyu.board.SOUTH )
 		result = self.Masyu.followLine( 0, 1 )
 		self.assertEquals( result, ( 1, 1 ) )
-
-
 	def test_Masyu_line_cannotCreateSmallLoop( self ):
 		self.Masyu.board.initBoard( 4, 5, "....\n.www\n....\n....\n...." )
 		self.Masyu.solveBoard()
-		#self.assertEquals( self.Masyu.board.getValue( )
+		self.assertEquals( self.Masyu.board.getValue( 0, 3 )[1],
+				( ( self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH ) )
 
-	"""
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
 		self.Masyu.solveBoard()
@@ -239,17 +237,12 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_SolveBoard_02( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-7.txt" )
 		self.Masyu.solveBoard()
-	"""
 	def test_Masyu_SolveBoard_03( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-3.txt" )
 		self.Masyu.solveBoard()
-	"""
 	def test_Masyu_SolveBoard_04( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-3-7.txt" )
 		self.Masyu.solveBoard()
-	"""
-"""
-"""
 
 def suite():
 	suite = unittest.TestSuite()
