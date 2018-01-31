@@ -300,11 +300,37 @@ class SolveMasyu( object ):
 			val = val >> 1
 		return count
 
+	def followLine( self, x, y, direction=None ):
+		""" direction is the direction you came from (ignore it)
+		"""
+		control = {
+				self.board.NORTH : { "name": "NORTH", "offsetX":  0, "offsetY": -1, "o": self.board.SOUTH },
+				self.board.EAST  : { "name": "EAST",  "offsetX":  1, "offsetY":  0, "o": self.board.WEST  },
+				self.board.SOUTH : { "name": "SOUTH", "offsetX":  0, "offsetY":  1, "o": self.board.NORTH },
+				self.board.WEST  : { "name": "WEST",  "offsetX": -1, "offsetY":  0, "o": self.board.EAST  }
+		}
+		self.logger.debug( "Entering followLine( %i, %i, %s )" % ( x, y, (direction and control[direction]["name"] or "None" ) ) )
+		exitValues = self.board.getValue( x, y )[1]
+		currentDirections = exitValues & 15
+		self.logger.debug( "exitValues: %s currentDirections: %s" % ( bin( exitValues ), bin( currentDirections ) ) )
+		currentDirectionCount = self.__oneCount( currentDirections )
+		if( currentDirectionCount == 1 and direction ):
+			self.logger.debug( "Found the end of the line at ( %i, %i )" % ( x, y ) )
+			return( ( x, y ) )
+		else:
+			self.logger.debug( "currentDirections: %s direction: %s" % ( bin( currentDirections ), ( direction or "None" ) ) )
+			goDir = currentDirections ^ (direction or 0)
+			self.logger.debug( "goDir: %s" % ( bin( goDir ), ) )
+			self.logger.debug( "Follow the line to the %s" % ( control[goDir]["name"], ) )
+			return( self.followLine( x+control[goDir]["offsetX"], y+control[goDir]["offsetY"], control[goDir]["o"] ) )
+
+
 	def dotNone( self, x, y ):
 		""" 'empty' dots follow a few rules as well.
 		1) if a line enters it, with only one exit, use that exit.
 		2) if there are 3 noExits, set the 4th noExit. ( no way to exit if entered )
 		3) if there are 2 used exits, make sure that the other directions are marked as noExit
+		4) if a line enters it, follow the line.
 		"""
 		self.logger.debug( "dotNone( %i, %i )" % ( x, y ) )
 		change = False
@@ -327,10 +353,20 @@ class SolveMasyu( object ):
 		self.logger.debug( "missingDirections   : %s" % ( bin( missingDirections ), ) )
 
 		# 1) single line, 2 impossible exits
-		if( currentDirectionCount == 1 and impossibleDirectionCount == 2 ):
-			self.logger.debug( "dot has a line, and a single exit available." )
-			self.board.setExit( x, y, missingDirections )
-			change = True
+		# 4) single line, follow the line
+		if( currentDirectionCount == 1 ):
+			if( impossibleDirectionCount == 2 ):
+				self.logger.debug( "dot has a line, and a single exit available." )
+				self.board.setExit( x, y, missingDirections )
+				change = True
+			elif( impossibleDirectionCount < 2 ):
+				endX, endY = self.followLine( x, y )
+				self.logger.debug( "Line starting at ( %i, %i ) ends at ( %i, %i )" % ( x, y, endX, endY ) )
+				distance = abs( endX - x ) + abs( endY - y )
+
+
+
+
 		# 2) 3 noExits
 		if( impossibleDirectionCount == 3 ):
 			self.logger.debug( "dot has 3 noExits" )

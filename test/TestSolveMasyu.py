@@ -215,12 +215,19 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dot( 4, 0 )
 		self.assertEquals( self.Masyu.board.getValue( 5, 0 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.WEST ) )
-
-
+	def test_Masyu_followLine_01( self ):
+		self.Masyu.board.initBoard( 4, 5, "....\n....\n....\n....\n...." )
+		self.Masyu.board.setExit( 0, 0, self.Masyu.board.EAST )
+		self.Masyu.board.setExit( 0, 0, self.Masyu.board.SOUTH )
+		self.Masyu.board.setExit( 1, 0, self.Masyu.board.SOUTH )
+		result = self.Masyu.followLine( 0, 1 )
+		self.assertEquals( result, ( 1, 1 ) )
 
 
 	def test_Masyu_line_cannotCreateSmallLoop( self ):
-		pass
+		self.Masyu.board.initBoard( 4, 5, "....\n.www\n....\n....\n...." )
+		self.Masyu.solveBoard()
+		#self.assertEquals( self.Masyu.board.getValue( )
 
 	"""
 	def test_Masyu_SolveBoard_01( self ):
