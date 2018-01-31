@@ -95,7 +95,6 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotBlack( 3, 0 )
 		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
-
 	def test_Masyu_whiteDot_onTheEdge_North( self ):
 		self.Masyu.dotWhite( 1, 0 )
 		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
@@ -106,7 +105,6 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotWhite( 1, 1 )
 		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.WEST | self.Masyu.board.EAST ) )
-
 	def test_Masyu_whiteDot_boarderedOnTwoSidesByWhiteDots( self ):
 		""" a white dot in the middle of 2 others cannot go through them.
 		( only 2 white dots can be on a straight line )
@@ -115,23 +113,135 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.dotWhite( 2, 2 )
 		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
 				( ( self.Masyu.board.EAST | self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) )
+	def test_Masyu_empty_returns_false( self ):
+		self.assertFalse( self.Masyu.dot( 1, 1 ) )
+	def test_Masyu_empty_lineOnly_setsNoExits( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
+	def test_Masyu_empty_lineOnly_returns_True( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.assertTrue( self.Masyu.dot( 1, 1 ) )
+	def test_Masyu_empty_lineAndNoExits_returnsFalse( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.SOUTH )
+		self.assertFalse( self.Masyu.dot( 1, 1 ) )
+	def test_Masyu_empty_singleEntry_singleExit_EastToWest( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.SOUTH )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
+	def test_Masyu_empty_singleEntry_singleExit_WestToEast( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.SOUTH )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
+	def test_Masyu_empty_singleEntry_singleExit_NorthToEast( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.SOUTH )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.WEST | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.NORTH ) )
+	def test_Masyu_empty_singleEntry_singleExit_EastToSouth( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.WEST | self.Masyu.board.NORTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.SOUTH ) )
+	def test_Masyu_empty_singleEntry_singleExit_SouthToWest( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.NORTH )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.SOUTH | self.Masyu.board.WEST ) )
+	def test_Masyu_empty_singleEntry_singleExit_WestToNorth( self ):
+		self.Masyu.board.setExit( 1, 1, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.EAST )
+		self.Masyu.board.setNoExit( 1, 1, self.Masyu.board.SOUTH )
+		self.Masyu.dot( 1, 1 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 1 )[1],
+				( ( self.Masyu.board.EAST | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.WEST ) )
+	def test_Masyu_empty_threeNoExits_setFourthNoExit( self ):
+		""" normally corners, could be elsewhere though """
+		self.Masyu.board.setNoExit( 2, 2, self.Masyu.board.WEST )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( 15 << 4 ) ) )
+	def test_Masyu_blackDot_ignoreDirectionWhereThereIsASingleExitAt90DegreesInTheNextCoordinate( self ):
+		""" since the black dot has to go a distance of 2, a location with a single exit at 90 degrees would
+		need to exclude that direction.
+		invalid board... """
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..b..\n..www\n....." )
+		self.Masyu.dot( 2, 2 )
+		self.Masyu.dot( 3, 3 )
+		self.Masyu.dot( 4, 3 )
+		self.Masyu.dot( 2, 3 )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.SOUTH | self.Masyu.board.WEST ) )
+	def test_Masyu_whiteDot_followLine_terminateShortestEnd_01( self ):
+		""" a white dot 'must turn in the previous and/or next cell in its path.'
+		-w- has not enough info
+		-w-.- has enough to make  x-w-.-
+		-w-w- would work the same, each dot would terminate the short end  x-w-w-x
+		-w-.-.-.-.-.-w- is no different.
+		|-w-| would set the exits anyway
+		"""
+		self.Masyu.board.initBoard( 6, 2, "..ww..\n......" )
+		self.Masyu.dot( 2, 0 )  # draws the first one.
+		self.Masyu.dot( 3, 0 )  # draws the 2nd one.
+		self.Masyu.dot( 2, 0 )  # this time it should find the noExit
+		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.WEST ) << 4 | self.Masyu.board.EAST ) )
+	def test_Masyu_whiteDot_followLine_terminateShortestEnd_02( self ):
+		self.Masyu.board.initBoard( 7, 2, "..w.w..\n......." )
+		self.Masyu.dot( 2, 0 )  # draws the first one.
+		self.Masyu.dot( 4, 0 )  # draws the 2nd one.
+		self.Masyu.dot( 2, 0 )
+		self.assertEquals( self.Masyu.board.getValue( 1, 0 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.WEST ) << 4 | self.Masyu.board.EAST ) )
+		self.Masyu.dot( 4, 0 )
+		self.assertEquals( self.Masyu.board.getValue( 5, 0 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.WEST ) )
 
 
+
+
+	def test_Masyu_line_cannotCreateSmallLoop( self ):
+		pass
+
+	"""
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
 		self.Masyu.solveBoard()
 	def test_Masyu_SolveBoard_02( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-6.txt" )
 		self.Masyu.solveBoard()
-
-
-"""
-	def test_Masyu_blackDot_( self ):
-		print "balckDot_"
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_5x5_single_black.txt" )
-		self.Masyu.dotBlack( 2, 2 )
-	def test_Masyu_solveBoard( self ):
+	def test_Masyu_SolveBoard_02( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-7.txt" )
 		self.Masyu.solveBoard()
+	"""
+	def test_Masyu_SolveBoard_03( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-3.txt" )
+		self.Masyu.solveBoard()
+	"""
+	def test_Masyu_SolveBoard_04( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-3-7.txt" )
+		self.Masyu.solveBoard()
+	"""
+"""
 """
 
 def suite():
