@@ -227,6 +227,30 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.Masyu.solveBoard()
 		self.assertEquals( self.Masyu.board.getValue( 0, 3 )[1],
 				( ( self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH ) )
+	def test_Masyu_blackDot_preconnected_lines_setsNoExits_01( self ):
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..b..\n.....\n....." )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.NORTH )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.EAST )
+		result = self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.SOUTH | self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.EAST ) )
+	def test_Masyu_blackDot_preconnected_lines_setsNoExits_02( self ):
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..b..\n.....\n....." )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.SOUTH )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.WEST )
+		result = self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.SOUTH | self.Masyu.board.WEST ) )
+	def test_Masyu_blackDot_preconnected_lines_setsNoExits_03( self ):
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..b..\n.....\n....." )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.SOUTH )
+		self.Masyu.board.setExit( 2, 2, self.Masyu.board.WEST )
+		self.Masyu.board.setNoExit( 2, 2, self.Masyu.board.NORTH )
+		result = self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.SOUTH | self.Masyu.board.WEST ) )
+
+
 
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
@@ -243,6 +267,10 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_SolveBoard_04( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-3-7.txt" )
 		self.Masyu.solveBoard()
+	def test_Masyu_SolveBoard_05( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_example.txt" )
+		self.Masyu.solveBoard()
+
 
 def suite():
 	suite = unittest.TestSuite()

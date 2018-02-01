@@ -19,6 +19,15 @@ class SolveMasyu( object ):
 	Any single black dot puzzle solves to a 3x3 square (line goes 2 lengths).
 	A single white dot puzzle solves to a 3x2 rectangle (has to turn previous and/or next square).
 	"""
+
+	control = {
+			MasyuBoard.MasyuBoard.NORTH : { "name": "NORTH" },
+			MasyuBoard.MasyuBoard.EAST  : { "name": "EAST" },
+			MasyuBoard.MasyuBoard.SOUTH : { "name": "SOUTH" },
+			MasyuBoard.MasyuBoard.WEST  : { "name": "WEST" },
+	}
+
+
 	def __init__( self, board=None ):
 		""" create the board else where, init it, populate it, pass it to this object """
 		if( board ):
@@ -99,8 +108,21 @@ class SolveMasyu( object ):
 			SW = 12 ( 1100 )
 			WN = 9  ( 1001 )
 			"""
-			self.logger.debug( "this dot is valid, return False" )
-			return False
+			# = 0011 ^ 15 = 1100  ^ 0100 = 1000
+			requiredNoExits = currentDirections ^ 15 ^ impossibleDirections
+
+			if( requiredNoExits != impossibleDirections ):
+				self.logger.debug( "The exits are incomplete." )
+				for checkDir in self.control:
+					struct = self.control[checkDir]
+					self.logger.debug( "Checking %s" % ( struct["name"], ) )
+					if( requiredNoExits & checkDir ):
+						self.logger.debug( "noExit in %s needs to be set" % ( struct["name"], ) )
+						self.board.setNoExit( x, y, checkDir )
+						change = True
+			else:
+				self.logger.debug( "this dot is valid, return False" )
+			return change
 
 		possibleDirections = 0  # use this to set possible directions to choose from
 
