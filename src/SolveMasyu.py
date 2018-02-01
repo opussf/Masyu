@@ -21,10 +21,10 @@ class SolveMasyu( object ):
 	"""
 
 	control = {
-			MasyuBoard.MasyuBoard.NORTH : { "name": "NORTH" },
-			MasyuBoard.MasyuBoard.EAST  : { "name": "EAST" },
-			MasyuBoard.MasyuBoard.SOUTH : { "name": "SOUTH" },
-			MasyuBoard.MasyuBoard.WEST  : { "name": "WEST" },
+			MasyuBoard.MasyuBoard.NORTH : { "name": "NORTH", "offsetX":  0, "offsetY": -1 },
+			MasyuBoard.MasyuBoard.EAST  : { "name": "EAST",  "offsetX":  1, "offsetY":  0 },
+			MasyuBoard.MasyuBoard.SOUTH : { "name": "SOUTH", "offsetX":  0, "offsetY":  1 },
+			MasyuBoard.MasyuBoard.WEST  : { "name": "WEST",  "offsetX": -1, "offsetY":  0 },
 	}
 
 
@@ -120,6 +120,7 @@ class SolveMasyu( object ):
 						self.logger.debug( "noExit in %s needs to be set" % ( struct["name"], ) )
 						self.board.setNoExit( x, y, checkDir )
 						change = True
+				self.logger.debug( "this dot has been validated" )
 			else:
 				self.logger.debug( "this dot is valid, return False" )
 			return change
@@ -209,8 +210,8 @@ class SolveMasyu( object ):
 
 		if currentDirections in [ 5, 10 ]:
 			"""
-			NS = 5  ( 0101 )
-			EW = 10 ( 1010 )
+			NS = 5  ( 0101 )  self.board.NORTH | self.board.SOUTH
+			EW = 10 ( 1010 )  self.board.EAST  | self.board.WEST
 			"""
 			self.logger.debug( "This dot has 2 exits." )
 			control = {
@@ -273,18 +274,31 @@ class SolveMasyu( object ):
 
 		# look for two other whitedots
 		try:
-			westVal = self.board.getValue( x-1, y )[0]
-			eastVal = self.board.getValue( x+1, y )[0]
-			if( westVal == "w" and eastVal == "w" ):
+			west = self.board.getValue( x-1, y )
+			east = self.board.getValue( x+1, y )
+			# check if white dots on both sides
+			if( east[0] == "w" and west[0] == "w" ):
 				self.logger.debug( "white dots are on both the EAST and the WEST" )
+				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
+			elif( east[0] == "w" and ( west[1] & 15 == self.board.WEST ) ):
+				self.logger.debug( "white dot has a white dot neighbor on the EAST, and an oncoming line on the WEST" )
+				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
+			elif( west[0] == "w" and ( east[1] & 15 == self.board.EAST ) ):
+				self.logger.debug( "white dot has a white dot neighbor on the WEST, and an oncoming line on the EAST" )
 				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
 		except ValueError:  # a ValueError is expected if on the east or west edge
 			pass
 		try:
-			northVal = self.board.getValue( x, y-1 )[0]
-			southVal = self.board.getValue( x, y+1 )[0]
-			if( northVal == "w" and southVal == "w" ):
+			north = self.board.getValue( x, y-1 )
+			south = self.board.getValue( x, y+1 )
+			if( north[0] == "w" and south[0] == "w" ):
 				self.logger.debug( "white dots are on both the NORTH and the SOUTH" )
+				possibleDirections = ( self.board.EAST | self.board.WEST )
+			elif( north[0] == "w" and ( south[1] & 15 == self.board.SOUTH ) ):
+				self.logger.debug( "white dot has a white dot neighbor on the NORTH, and an oncoming line on the SOUTH" )
+				possibleDirections = ( self.board.EAST | self.board.WEST )
+			elif( south[0] == "w" and ( north[1] & 15 == self.board.NORTH ) ):
+				self.logger.debug( "white dot has a white dot neighbor on the SOUTH, and an oncoming line on the NORTH" )
 				possibleDirections = ( self.board.EAST | self.board.WEST )
 		except ValueError:  # a ValueError is expected if on the north or south edge
 			pass

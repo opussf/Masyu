@@ -249,9 +249,39 @@ class TestSolveMasyu( unittest.TestCase ):
 		result = self.Masyu.dot( 2, 2 )
 		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.EAST ) << 4 | self.Masyu.board.SOUTH | self.Masyu.board.WEST ) )
+	def test_Masyu_whiteDot_TwoInLineWithLineinline_linInWest( self ):
+		""" -.ww   Testing the left white dot will result in it having a vertical line.
+		"""
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..ww.\n.....\n....." )
+		self.Masyu.board.setExit( 1, 2, self.Masyu.board.WEST )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.EAST | self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) )
+	def test_Masyu_whiteDot_TwoInLineWithLineinline_linInEast( self ):
+		""" .ww.-   Testing the left white dot will result in it having a vertical line.
+		"""
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n.ww..\n.....\n....." )
+		self.Masyu.board.setExit( 3, 2, self.Masyu.board.EAST )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.EAST | self.Masyu.board.WEST ) << 4 | self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) )
+	def test_Masyu_whiteDot_TwoInLineWithLineinline_linInNorth( self ):
+		""" see other tests for this for example """
+		self.Masyu.board.initBoard( 5, 5, ".....\n.....\n..w..\n..w..\n....." )
+		self.Masyu.board.setExit( 2, 1, self.Masyu.board.NORTH )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
+	def test_Masyu_whiteDot_TwoInLineWithLineinline_linInSouth( self ):
+		""" see other tests for this for example """
+		self.Masyu.board.initBoard( 5, 5, ".....\n..w..\n..w..\n.....\n....." )
+		self.Masyu.board.setExit( 2, 3, self.Masyu.board.SOUTH )
+		self.Masyu.dot( 2, 2 )
+		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
+				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
 
 
-
+	"""
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
 		self.Masyu.solveBoard()
@@ -270,7 +300,7 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_SolveBoard_05( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_example.txt" )
 		self.Masyu.solveBoard()
-
+	"""
 
 def suite():
 	suite = unittest.TestSuite()
