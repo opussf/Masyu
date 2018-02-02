@@ -141,6 +141,7 @@
 		<move todir="${report.dir}">
 			<fileset dir="${working.dir}">
 				<include name="TEST*.xml"/>
+				<include name="*.log"/>
 			</fileset>
 		</move>
 		<fail message="The tests failed. Please see the output for details.">
