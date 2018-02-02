@@ -68,10 +68,10 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_getValue_topRight( self ):
 		""" getValue returns a tuple. no lines made """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
-		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( "b", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( "b", 48 ) )
 	def test_getValue_bottomRight( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
-		self.assertEquals( self.masyuBoard.getValue( 2, 2 ), ( ".", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 2, 2 ), ( ".", 96 ) )
 	def test_Print_type( self ):
 		""" fails if not string """
 		self.masyuBoard.initBoard( 3 )
@@ -83,19 +83,19 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setValue_goodRange_black( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setValue( 0, 0, "b" )
-		self.assertEquals( self.masyuBoard.getValue( 0, 0 ), ( "b", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 0, 0 ), ( "b", 144 ) )
 	def test_setValue_goodRange_white( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setValue( 1, 0, "w" )
-		self.assertEquals( self.masyuBoard.getValue( 1, 0 ), ( "w", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 1, 0 ), ( "w", 16 ) )
 	def test_setValue_goodRange_empty_null( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setValue( 2, 0 )
-		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 48 ) )
 	def test_setValue_goodRange_empty_period( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setValue( 2, 0, "." )
-		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 0 ) )
+		self.assertEquals( self.masyuBoard.getValue( 2, 0 ), ( ".", 48 ) )
 	def test_setValue_outsideRange_xHigh( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setValue, 3, 0, "b" )
@@ -105,12 +105,14 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setExit_goodRange_single( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 2, 0, 'w' )
-		self.assertEquals( self.masyuBoard.lineBoard[2], 8 )
+		self.assertEquals( self.masyuBoard.lineBoard[2],
+				( self.masyuBoard.NORTH | self.masyuBoard.EAST ) << 4 | self.masyuBoard.WEST )
 	def test_setExit_goodRange_multiple( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 2, 0, 'w' )
 		self.masyuBoard.setExit( 2, 0, 's' )
-		self.assertEquals( self.masyuBoard.lineBoard[2], 12 )
+		self.assertEquals( self.masyuBoard.lineBoard[2],
+				( self.masyuBoard.NORTH | self.masyuBoard.EAST ) << 4 | self.masyuBoard.WEST | self.masyuBoard.SOUTH )
 	def test_setExit_outsideRange_xHigh( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 3, "n" )
@@ -120,26 +122,30 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setExit_takesLetter( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, "s" )
-		self.assertEquals( self.masyuBoard.lineBoard[0], 4 )
+		self.assertEquals( self.masyuBoard.lineBoard[0],
+				( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4 | self.masyuBoard.SOUTH )
 	def test_setExit_secondLetterIsIgnored( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, "se" )
-		self.assertEquals( self.masyuBoard.lineBoard[0], 4 )
+		self.assertEquals( self.masyuBoard.lineBoard[0],
+				( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4 | self.masyuBoard.SOUTH )
 	def test_setExit_invalidLetter( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, "z" )
 	def test_setExit_uppercaseLetter( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, "S" )
-		self.assertEquals( self.masyuBoard.lineBoard[0], self.masyuBoard.SOUTH )
+		self.assertEquals( self.masyuBoard.lineBoard[0], ( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4 | self.masyuBoard.SOUTH )
 	def test_setExit_takesNumber( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST )
-		self.assertEquals( self.masyuBoard.lineBoard[0], self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.lineBoard[0],
+				( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4 | self.masyuBoard.EAST )
 	def test_setExit_takesNumber_complex( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST | self.masyuBoard.SOUTH )
-		self.assertEquals( self.masyuBoard.lineBoard[0], 6 )
+		self.assertEquals( self.masyuBoard.lineBoard[0],
+				( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4 | self.masyuBoard.EAST | self.masyuBoard.SOUTH )
 	def test_setExit_takesNumber_invalid( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertRaises( ValueError, self.masyuBoard.setExit, 0, 0, 16 )
@@ -161,19 +167,23 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_setExit_setsExitForNextLocation_north( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 1, 1, self.masyuBoard.NORTH )
-		self.assertEquals( self.masyuBoard.lineBoard[1], self.masyuBoard.SOUTH )
+		self.assertEquals( self.masyuBoard.lineBoard[1],
+				( self.masyuBoard.NORTH << 4 | self.masyuBoard.SOUTH ) )
 	def test_setExit_setsExitForNextLocation_south( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 1, 1, self.masyuBoard.SOUTH )
-		self.assertEquals( self.masyuBoard.lineBoard[7], self.masyuBoard.NORTH )
+		self.assertEquals( self.masyuBoard.lineBoard[7],
+				( self.masyuBoard.SOUTH << 4 | self.masyuBoard.NORTH ) )
 	def test_setExit_setsExitForNextLocation_east( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 1, 1, self.masyuBoard.EAST )
-		self.assertEquals( self.masyuBoard.lineBoard[5], self.masyuBoard.WEST )
+		self.assertEquals( self.masyuBoard.lineBoard[5],
+				( self.masyuBoard.EAST << 4 | self.masyuBoard.WEST ) )
 	def test_setExit_setsExitForNextLocation_west( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setExit( 1, 1, self.masyuBoard.WEST )
-		self.assertEquals( self.masyuBoard.lineBoard[3], self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.lineBoard[3],
+				( self.masyuBoard.WEST << 4 | self.masyuBoard.EAST ) )
 	def test_Print_showsLine( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 2, 0, 'w' )
@@ -189,7 +199,84 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 0, 1, "n" )
 		self.masyuBoard.setExit( 1, 2, "e" )
 		self.assertEquals( self.masyuBoard.__str__(), ".-w-b\n|   |\n. . .\n|   |\nb-.-." )
+	def test_setNoExit_goodRange_single( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, "n" )
+		self.assertEquals( self.masyuBoard.lineBoard[4], self.masyuBoard.NORTH << 4 )
+	def test_setNoExit_invalidLetter( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setNoExit, 0, 0, "z" )
+	def test_setNoExit_takesNumber_invalid( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertRaises( ValueError, self.masyuBoard.setNoExit, 0, 0, 16 )
+	def test_setNoExit_setsNoExitForNextLocation_north( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.NORTH )
+		self.assertEquals( self.masyuBoard.lineBoard[1], ( self.masyuBoard.NORTH | self.masyuBoard.SOUTH ) << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_south( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.SOUTH )
+		self.assertEquals( self.masyuBoard.lineBoard[7], ( self.masyuBoard.SOUTH | self.masyuBoard.NORTH ) << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_east( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.lineBoard[5], ( self.masyuBoard.EAST | self.masyuBoard.WEST ) << 4 )
+	def test_setNoExit_setsNoExitForNextLocation_west( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.WEST )
+		self.assertEquals( self.masyuBoard.lineBoard[3], ( self.masyuBoard.WEST | self.masyuBoard.EAST ) << 4 )
+	def test_setNoExit_doesNotChangeExit( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 1, 1, self.masyuBoard.EAST | self.masyuBoard.WEST )  # exit is e-w
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.NORTH | self.masyuBoard.SOUTH )
+		expectedValue = (self.masyuBoard.NORTH | self.masyuBoard.SOUTH) << 4
+		expectedValue = expectedValue | self.masyuBoard.EAST | self.masyuBoard.WEST
+		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
+	def test_setExit_doesNotChangeNoExit( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 1, self.masyuBoard.EAST | self.masyuBoard.WEST ) # don't exit east or west
+		self.masyuBoard.setExit( 1, 1, self.masyuBoard.NORTH | self.masyuBoard.SOUTH )
 
+		expectedValue = (self.masyuBoard.EAST | self.masyuBoard.WEST) << 4
+		expectedValue = expectedValue | self.masyuBoard.NORTH | self.masyuBoard.SOUTH
+		self.assertEquals( expectedValue, self.masyuBoard.lineBoard[4] )
+	def test_setNoExit_doesNotErrorOnSettingNoExitOnEdge_north( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setNoExit( 1, 0, "n" )
+		self.assertEquals( self.masyuBoard.NORTH << 4, self.masyuBoard.lineBoard[1] )
+	def test_initBoard_noExit_Border_NorthWest( self ):
+		self.masyuBoard.initBoard( 4 )
+		self.assertEquals( ( self.masyuBoard.NORTH | self.masyuBoard.WEST ) << 4, self.masyuBoard.getValue( 0, 0 )[1] )
+	def test_initBoard_noExit_Border_SouthEast( self ):
+		self.masyuBoard.initBoard( 4 )
+		self.assertEquals( ( self.masyuBoard.SOUTH | self.masyuBoard.EAST ) << 4, self.masyuBoard.getValue( 3, 3 )[1] )
+	def test_loadFromFile_savesFilename( self ):
+		puzzleName = "puzzles/puzzle_17x17_01.txt"
+		self.masyuBoard.loadFromFile( puzzleName )
+		self.assertEquals( self.masyuBoard.filename, puzzleName )
+	def test_isSolved_returnsFalse_3x3( self ):
+		""" assert that isSolved returns false for an empty board """
+		self.masyuBoard.initBoard( 3 )
+		self.assertFalse( self.masyuBoard.isSolved() )
+	def notest_isSolved_returnsTrue_3x3( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertTrue( self.masyuBoard.isSolved() )
+	def test_solvedPercent_3x3_00( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.solvedPercent(), 0 )
+	def test_solvedPerent_3x3_( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.SOUTH )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.solvedPercent(), 11.11 )
+
+"""
+		x 		x x
+	   x.x 	   x.-.x
+	 	x 	    | |
+	 		   x.-.x
+	 		    x x
+"""
 def suite():
 	suite = unittest.TestSuite()
 	suite.addTests( unittest.makeSuite( TestMasyuBoard ) )
