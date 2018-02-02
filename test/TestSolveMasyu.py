@@ -298,34 +298,43 @@ class TestSolveMasyu( unittest.TestCase ):
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
 
 
+	# try some real boards, keep track of how far they can be solved
 	def test_Masyu_SolveBoard_00( self ):
 		self.Masyu.board.initBoard( 3, 3, ".w.\nw..\n..." )
 		self.Masyu.solveBoard()
-
+		self.assertEquals( self.Masyu.board.solvedPercent(), 55.56 )
 	def test_Masyu_SolveBoard_01( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
 		self.Masyu.solveBoard()
+		self.assertEquals( self.Masyu.board.solvedPercent(), 59.17 )
 	def test_Masyu_SolveBoard_02( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-6.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_02( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 77.44 )
+	def test_Masyu_SolveBoard_03( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-7.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_03( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 51.79 )
+	def test_Masyu_SolveBoard_04( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-3.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_04( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
+	def test_Masyu_SolveBoard_05( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-3-7.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_05( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 59.49 )
+	def test_Masyu_SolveBoard_06( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_example.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_06( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
+	def test_Masyu_SolveBoard_07( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_medium_1-1-1.txt" )
 		self.Masyu.solveBoard()
-	def test_Masyu_SolveBoard_07( self ):
+		self.assertEquals( self.Masyu.board.solvedPercent(), 86.67 )
+	def test_Masyu_SolveBoard_08( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_17x17_01.txt" )
 		self.Masyu.solveBoard()
+		self.assertEquals( self.Masyu.board.solvedPercent(), 26.99 )
 
 def suite():
 	suite = unittest.TestSuite()
