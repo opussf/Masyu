@@ -250,7 +250,33 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_initBoard_noExit_Border_SouthEast( self ):
 		self.masyuBoard.initBoard( 4 )
 		self.assertEquals( ( self.masyuBoard.SOUTH | self.masyuBoard.EAST ) << 4, self.masyuBoard.getValue( 3, 3 )[1] )
+	def test_loadFromFile_savesFilename( self ):
+		puzzleName = "puzzles/puzzle_17x17_01.txt"
+		self.masyuBoard.loadFromFile( puzzleName )
+		self.assertEquals( self.masyuBoard.filename, puzzleName )
+	def test_isSolved_returnsFalse_3x3( self ):
+		""" assert that isSolved returns false for an empty board """
+		self.masyuBoard.initBoard( 3 )
+		self.assertFalse( self.masyuBoard.isSolved() )
+	def notest_isSolved_returnsTrue_3x3( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertTrue( self.masyuBoard.isSolved() )
+	def test_solvedPercent_3x3_00( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.solvedPercent(), 0 )
+	def test_solvedPerent_3x3_( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.SOUTH )
+		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST )
+		self.assertEquals( self.masyuBoard.solvedPercent(), 11.11 )
 
+"""
+		x 		x x
+	   x.x 	   x.-.x
+	 	x 	    | |
+	 		   x.-.x
+	 		    x x
+"""
 def suite():
 	suite = unittest.TestSuite()
 	suite.addTests( unittest.makeSuite( TestMasyuBoard ) )

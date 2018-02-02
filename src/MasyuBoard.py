@@ -76,7 +76,8 @@ class MasyuBoard( object ):
 		# @TODO: set noexit flags around the edge of the board on init.
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
-		puzzle = file( puzzleFile, "r" ).read()
+		self.filename = puzzleFile
+		puzzle = file( self.filename, "r" ).read()
 		self.initBoard( line=puzzle )
 	def __offset( self, x, y ):
 		""" private function.  return the offset, or raise a ValueError """
@@ -178,12 +179,17 @@ class MasyuBoard( object ):
 		""" return true if solved
 		solved can be a few things....
 		"""
-		return False
+		return ( reduce( lambda x,y: x and y, map( lambda x: ((x >> 4) ^ (x & 15) == 15), self.lineBoard ) ) )
 
 	def solvedPercent( self ):
 		""" return percent of the board that is solved
 		"""
-		return 0
+		totalSize = len( self.lineBoard )
+		solvedCount = 0
+		for val in self.lineBoard:
+			if( ( val >> 4 ) ^ ( val & 15 ) == 15 ):
+				solvedCount = solvedCount + 1
+		return( float( "%.2f" % ( solvedCount * 100.0 / totalSize, ) ) )
 
 	def __str__( self ):
 		""" convert the object to a string

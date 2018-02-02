@@ -52,7 +52,8 @@ class SolveMasyu( object ):
 		I.E. it is the burden of the puzzle to create a single solution.
 		if the puzzle has a non-empty square, send it to dot() to determine the color, and call the right function.
 		"""
-		self.logger.debug( "Starting solveBoard" )
+		self.logger.info( "Starting solveBoard for %s" % ( self.board.filename, ) )
+		self.logger.info( "Empty board:\n%s" % ( self.board, ) )
 		doAgain = True
 		counter = 0
 		while doAgain:
@@ -67,21 +68,27 @@ class SolveMasyu( object ):
 					doAgain = result or doAgain
 					self.logger.debug( "doAgain: %s" % ( doAgain and "True" or "False", ) )
 			self.logger.debug( "End of Loop #%i >>> doAgain: %s" % ( counter, doAgain and "True" or "False" ) )
-		self.logger.info( "Final board state:\n%s" % ( self.board, ) )
+		self.logger.info( "Final board state of %s:\n%s" % ( self.board.filename, self.board ) )
+		self.logger.info( "Solved percent: %s%%" % ( self.board.solvedPercent(), ) )
 
 	def dot( self, x, y ):
 		""" determine the color of the dot, and call the right function.
 		returns if the function did anything or not """
+		dotControl = { "b": self.dotBlack, "w": self.dotWhite, ".": self.dotNone }
 		square, lines = self.board.getValue( x, y )
 		self.logger.debug( "dot( %i, %i ) square: %s value: %i" % ( x, y, square, lines ) )
-		if square == "b":
-			return self.dotBlack( x, y )
-		elif square == "w":
-			return self.dotWhite( x, y )
-		elif square == ".":
-			return self.dotNone( x, y )
-		else: # maybe this should be an error?
-			return False
+		repeatCount = 0
+		func = dotControl[square]
+		if func:
+			self.logger.debug( "a function has been determined for '%s' (%s)." % ( square, func.__name__ ) )
+			result = func( x, y )
+			while result:
+				self.logger.debug( "function made a change, call it again" )
+				result = func( x, y )
+				repeatCount = repeatCount + 1
+			self.logger.debug( "%s( %i, %i ) was repeated %i time%s." % ( func.__name__, x, y, repeatCount, (repeatCount!=1 and "s" or "" ) ) )
+			return( repeatCount > 0 )
+		return False
 
 	def dotBlack( self, x, y ):
 		""" a black dot has to have the line turn 90 degrees.
@@ -97,8 +104,8 @@ class SolveMasyu( object ):
 		impossibleDirections = exitValues >> 4
 		currentDirections = exitValues & 15
 
-		self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
-		self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
+		# self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
+		# self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
 
 		# short circut return if good to go
 		if currentDirections in [ 3, 6, 12, 9 ]:
@@ -125,6 +132,8 @@ class SolveMasyu( object ):
 				self.logger.debug( "this dot is valid, return False" )
 			return change
 
+		self.logger.debug( "impossibleDirections: %s" % ( bin( impossibleDirections ), ) )
+		self.logger.debug( "currentDirections   : %s" % ( bin( currentDirections ), ) )
 		possibleDirections = 0  # use this to set possible directions to choose from
 
 		control = { self.board.NORTH : { "name": "NORTH", "offsetX": 0, "offsetY": -1, "b": self.board.EAST | self.board.WEST, "o": self.board.SOUTH },
@@ -243,7 +252,6 @@ class SolveMasyu( object ):
 								self.logger.debug( "noExit is not already set" )
 								self.board.setNoExit( otherSideX, otherSideY, struct["o"] )
 								change = True
-
 			if not change:
 				self.logger.debug( "this dot is valid, return False" )
 			return change
@@ -367,7 +375,6 @@ class SolveMasyu( object ):
 			self.logger.debug( "goDir: %s" % ( bin( goDir ), ) )
 			self.logger.debug( "Follow the line to the %s" % ( control[goDir]["name"], ) )
 			return( self.followLine( x+control[goDir]["offsetX"], y+control[goDir]["offsetY"], control[goDir]["o"] ) )
-
 
 	def dotNone( self, x, y ):
 		""" 'empty' dots follow a few rules as well.

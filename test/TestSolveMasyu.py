@@ -323,6 +323,9 @@ class TestSolveMasyu( unittest.TestCase ):
 	def test_Masyu_SolveBoard_06( self ):
 		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_medium_1-1-1.txt" )
 		self.Masyu.solveBoard()
+	def test_Masyu_SolveBoard_07( self ):
+		self.Masyu.board.loadFromFile( "puzzles/puzzle_17x17_01.txt" )
+		self.Masyu.solveBoard()
 
 def suite():
 	suite = unittest.TestSuite()
