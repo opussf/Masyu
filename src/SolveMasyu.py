@@ -434,8 +434,6 @@ class SolveMasyu( object ):
 							self.board.setNoExit( x, y, self.board.WEST )
 							change = True
 
-
-
 		# 2) 3 noExits
 		if( impossibleDirectionCount == 3 ):
 			self.logger.debug( "dot has 3 noExits" )
