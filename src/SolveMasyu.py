@@ -66,7 +66,7 @@ class SolveMasyu( object ):
 						self.logger.info( "\n%s" % ( self.board, ) )
 					doAgain = result or doAgain
 					self.logger.debug( "doAgain: %s" % ( doAgain and "True" or "False", ) )
-			self.logger.debug( "End of Loop  >>> doAgain: %s" % ( doAgain and "True" or "False", ) )
+			self.logger.debug( "End of Loop #%i >>> doAgain: %s" % ( counter, doAgain and "True" or "False" ) )
 		self.logger.info( "Final board state:\n%s" % ( self.board, ) )
 
 	def dot( self, x, y ):
@@ -197,6 +197,8 @@ class SolveMasyu( object ):
 		2) If a white dot already has an exit (from another rule) continue through the dot.
 		3) If a white dot has another white dot on both sides, those white dots are both blocked directions.
 		4) If a white dot has a long line ( next square goes straight ), the opposite direction can be blocked
+		5) .-. w w .   Means that the white lines cannot go east - west
+		6) .-. w w .-.  Means that the white lines cannot go east - west
 
 		WSEN
 		8421
@@ -286,6 +288,9 @@ class SolveMasyu( object ):
 			elif( west[0] == "w" and ( east[1] & 15 == self.board.EAST ) ):
 				self.logger.debug( "white dot has a white dot neighbor on the WEST, and an oncoming line on the EAST" )
 				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
+			elif( ( east[1] & 15 == self.board.EAST ) and ( west[1] & 15 == self.board.WEST ) ):
+				self.logger.debug( "white dot has 2 incoming lines EAST and WEST, set NORTH and SOUTH directions" )
+				possibleDirections = ( self.board.NORTH | self.board.SOUTH )
 		except ValueError:  # a ValueError is expected if on the east or west edge
 			pass
 		try:
@@ -299,6 +304,9 @@ class SolveMasyu( object ):
 				possibleDirections = ( self.board.EAST | self.board.WEST )
 			elif( south[0] == "w" and ( north[1] & 15 == self.board.NORTH ) ):
 				self.logger.debug( "white dot has a white dot neighbor on the SOUTH, and an oncoming line on the NORTH" )
+				possibleDirections = ( self.board.EAST | self.board.WEST )
+			elif( ( north[1] & 15 == self.board.NORTH ) and ( south[1] & 15 == self.board.SOUTH ) ):
+				self.logger.debug( "white dot has 2 incoming lines NORTH and SOUTH, set EAST and WEST directions" )
 				possibleDirections = ( self.board.EAST | self.board.WEST )
 		except ValueError:  # a ValueError is expected if on the north or south edge
 			pass

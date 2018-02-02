@@ -174,6 +174,16 @@ class MasyuBoard( object ):
 			elif( value & self.WEST ):  # don't go west
 				self.setNoExit( x-1, y, self.EAST, True )
 
+	def isSolved( self ):
+		""" return true if solved
+		solved can be a few things....
+		"""
+		return False
+
+	def solvedPercent( self ):
+		""" return percent of the board that is solved
+		"""
+		return 0
 
 	def __str__( self ):
 		""" convert the object to a string
