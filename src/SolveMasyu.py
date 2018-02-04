@@ -28,7 +28,7 @@ class SolveMasyu( object ):
 	}
 
 
-	def __init__( self, board=None ):
+	def __init__( self, board=None, debug=None ):
 		""" create the board else where, init it, populate it, pass it to this object """
 		if( board ):
 			self.board = board
@@ -38,7 +38,7 @@ class SolveMasyu( object ):
 		self.logger = logging.getLogger( "SolveMasyu" )
 		self.logger.setLevel( logging.DEBUG )
 		handler = logging.FileHandler( "SolveMasyu.log" )
-		handler.setLevel( logging.DEBUG )
+		handler.setLevel( debug and logging.DEBUG or logging.INFO )
 		formatter = logging.Formatter( "%(asctime)s %(levelname)s %(message)s" )
 		handler.setFormatter( formatter )
 		self.logger.addHandler( handler )
@@ -65,6 +65,7 @@ class SolveMasyu( object ):
 					result = self.dot( x, y )
 					if( result ):
 						self.logger.info( "\n%s" % ( self.board, ) )
+						self.logger.info( "%s%%" % ( self.board.solvedPercent(), ) )
 					doAgain = result or doAgain
 					self.logger.debug( "doAgain: %s" % ( doAgain and "True" or "False", ) )
 			self.logger.debug( "End of Loop #%i >>> doAgain: %s" % ( counter, doAgain and "True" or "False" ) )
