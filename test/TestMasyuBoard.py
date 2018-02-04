@@ -269,14 +269,23 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 0, 0, self.masyuBoard.SOUTH )
 		self.masyuBoard.setExit( 0, 0, self.masyuBoard.EAST )
 		self.assertEquals( self.masyuBoard.solvedPercent(), 11.11 )
+	def test_getDotCount_0( self ):
+		""" return how many dots are in the puzzle """
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.getDotCount()[0], 0 )
+	def test_getDotCount_total( self ):
+		""" return how many dots are in the puzzle """
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( self.masyuBoard.getDotCount()[0], 3 )
+	def test_getDotCount_black( self ):
+		""" return how many dots are in the puzzle """
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( self.masyuBoard.getDotCount()[1], 2 )
+	def test_getDotCount_white( self ):
+		""" return how many dots are in the puzzle """
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( self.masyuBoard.getDotCount()[2], 1 )
 
-"""
-		x 		x x
-	   x.x 	   x.-.x
-	 	x 	    | |
-	 		   x.-.x
-	 		    x x
-"""
 def suite():
 	suite = unittest.TestSuite()
 	suite.addTests( unittest.makeSuite( TestMasyuBoard ) )
