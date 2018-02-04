@@ -259,6 +259,7 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.initBoard( 3 )
 		self.assertFalse( self.masyuBoard.isSolved() )
 	def notest_isSolved_returnsTrue_3x3( self ):
+		""" fix this """
 		self.masyuBoard.initBoard( 3 )
 		self.assertTrue( self.masyuBoard.isSolved() )
 	def test_solvedPercent_3x3_00( self ):
@@ -285,6 +286,17 @@ class TestMasyuBoard( unittest.TestCase ):
 		""" return how many dots are in the puzzle """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.assertEquals( self.masyuBoard.getDotCount()[2], 1 )
+	def test_getBoardState_empty( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.getBoardState(), (['.','.','.','.','.','.','.','.','.',],[144,16,48,128,0,32,192,64,96]) )
+	def test_getBoardState_loadedFromFile( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( self.masyuBoard.getBoardState(), (['.','w','b','.','.','.','b','.','.',],[144,16,48,128,0,32,192,64,96]) )
+	def test_setBoardState_emptyWithLines( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.masyuBoard.setBoardState( (['.','.','.','.','.','.','.','.','.'],[144,20,48,128,5,32,192,65,96]) )
+		self.assertEquals( self.masyuBoard.getValue( 1, 1 )[1],
+				( self.masyuBoard.NORTH | self.masyuBoard.SOUTH ) )
 
 def suite():
 	suite = unittest.TestSuite()

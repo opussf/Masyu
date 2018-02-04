@@ -194,6 +194,17 @@ class MasyuBoard( object ):
 		black = len( filter( lambda x: x=="b", self.baseBoard ) )
 		white = len( filter( lambda x: x=="w", self.baseBoard ) )
 		return( ( black+white, black, white ) )
+	def getBoardState( self ):
+		""" returns the 2 lists the represent the Masyu board.  ( baseBoard, lineBoard ) """
+		return( ( self.baseBoard, self.lineBoard ) )
+	def setBoardState( self, stateTuple ):
+		""" sets the state of the board to what was saved before.
+		@TODO: Make this an internal operation.  No data returned or passed back.
+		@TODO: Or, have some sort of checksum to validate the data
+		@TODOL Or, encode the state in someway that would make creating the puzzle again difficult.
+		"""
+		self.baseBoard = stateTuple[0]
+		self.lineBoard = stateTuple[1]
 	def __str__( self ):
 		""" convert the object to a string
 		This may look convoluted, and I'm sure it is.
