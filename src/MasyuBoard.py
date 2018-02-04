@@ -56,8 +56,8 @@ class MasyuBoard( object ):
 		if( ( self.xSize < 2 or self.ySize < 2 ) or
 				( self.xSize <= 2 and self.xSize <= 2 ) ):
 			raise( ValueError )
-#		if self.debug:
-#			print( ":: (xSize, ySize) (%s,%s) line: %s" % ( self.xSize or "None", self.ySize or "None", line or "None" ) )
+		#		if self.debug:
+		#			print( ":: (xSize, ySize) (%s,%s) line: %s" % ( self.xSize or "None", self.ySize or "None", line or "None" ) )
 		self.baseBoard = ["."] * ( self.xSize * self.ySize )
 		self.lineBoard = [0b00000000] * ( self.xSize * self.ySize )
 
@@ -89,9 +89,9 @@ class MasyuBoard( object ):
 	def getValue( self, x, y ):
 		""" returns a tuple of the base and line boards """
 		offset = self.__offset( x, y )
-#		if( x >= self.xSize or y >= self.ySize ):
-#			raise( ValueError )
-#		offset = y*self.xSize + x
+		#		if( x >= self.xSize or y >= self.ySize ):
+		#			raise( ValueError )
+		#		offset = y*self.xSize + x
 		return( (self.baseBoard[offset], self.lineBoard[offset]) )
 	def setValue( self, x, y, value=None ):
 		""" sets a value """
@@ -174,13 +174,11 @@ class MasyuBoard( object ):
 				self.setNoExit( x, y+1, self.NORTH, True )
 			elif( value & self.WEST ):  # don't go west
 				self.setNoExit( x-1, y, self.EAST, True )
-
 	def isSolved( self ):
 		""" return true if solved
 		solved can be a few things....
 		"""
 		return ( reduce( lambda x,y: x and y, map( lambda x: ((x >> 4) ^ (x & 15) == 15), self.lineBoard ) ) )
-
 	def solvedPercent( self ):
 		""" return percent of the board that is solved
 		"""
@@ -190,7 +188,23 @@ class MasyuBoard( object ):
 			if( ( val >> 4 ) ^ ( val & 15 ) == 15 ):
 				solvedCount = solvedCount + 1
 		return( float( "%.2f" % ( solvedCount * 100.0 / totalSize, ) ) )
-
+	def getDotCount( self ):
+		""" return the number of black and white dots
+		total, black, white """
+		black = len( filter( lambda x: x=="b", self.baseBoard ) )
+		white = len( filter( lambda x: x=="w", self.baseBoard ) )
+		return( ( black+white, black, white ) )
+	def getBoardState( self ):
+		""" returns the 2 lists the represent the Masyu board.  ( baseBoard, lineBoard ) """
+		return( ( self.baseBoard, self.lineBoard ) )
+	def setBoardState( self, stateTuple ):
+		""" sets the state of the board to what was saved before.
+		@TODO: Make this an internal operation.  No data returned or passed back.
+		@TODO: Or, have some sort of checksum to validate the data
+		@TODOL Or, encode the state in someway that would make creating the puzzle again difficult.
+		"""
+		self.baseBoard = stateTuple[0]
+		self.lineBoard = stateTuple[1]
 	def __str__( self ):
 		""" convert the object to a string
 		This may look convoluted, and I'm sure it is.
