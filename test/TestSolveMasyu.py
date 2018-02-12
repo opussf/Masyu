@@ -298,83 +298,51 @@ class TestSolveMasyu( unittest.TestCase ):
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
 
 
-	# try some real boards, keep track of how far they can be solved
+
 	def test_Masyu_SolveBoard_00( self ):
 		self.Masyu.board.initBoard( 3, 3, ".w.\nw..\n..." )
 		self.Masyu.solveBoard()
 		self.assertEquals( self.Masyu.board.solvedPercent(), 55.56 )
-	def test_Masyu_SolveBoard_6x6_easy_example( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_example.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_1( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-1.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_2( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-2.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_3( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-3.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_4( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-4.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_5( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-5.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def notest_Masyu_SolveBoard_6x6_easy_1_1_6( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-6.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_7( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-7.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_8( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-8.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_6x6_easy_1_1_22( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_6x6_easy_1-1-22.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 100.0 )
-	def test_Masyu_SolveBoard_10x12_hard( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_10x12_hard.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 59.17 )
-	def test_Masyu_SolveBoard_13x15_medium_1_1_1( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_medium_1-1-1.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 86.67 )
-	def test_Masyu_SolveBoard_13x15_hard_1_1_6( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-6.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 77.44 )
-	def test_Masyu_SolveBoard_13x15_hard_1_1_7( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-1-7.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 51.79 )
-	def test_Masyu_SolveBoard_13x15_hard_1_3_7( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_13x15_hard_1-3-7.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 59.49 )
+	# try some real boards, keep track of how far they can be solved
+	puzzles = [
+		("puzzles/puzzle_00.txt", 55.56),
+		("puzzles/puzzle_01.txt", 100.0),
+		#("puzzles/puzzle_1.txt", 0),
+		("puzzles/puzzle_2.txt", 100.0),
+		("puzzles/puzzle_3.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_example.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-1.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-2.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-3.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-4.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-5.txt", 100.0),
+		#("puzzles/puzzle_6x6_easy_1-1-6.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-7.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-8.txt", 100.0),
+		("puzzles/puzzle_6x6_easy_1-1-22.txt", 100.0),
+		("puzzles/puzzle_8x8_easy_01.txt", 100.0),
+		("puzzles/puzzle_10x12_hard.txt", 59.17),
+		("puzzles/puzzle_13x15_easy_1-1-1.txt", 100.0),
+		("puzzles/puzzle_13x15_easy_1-1-5.txt", 100.0),
+		("puzzles/puzzle_13x15_medium_1-1-1.txt", 86.67),
+		("puzzles/puzzle_13x15_hard_1-1-6.txt", 77.44),
+		("puzzles/puzzle_13x15_hard_1-1-7.txt", 51.79),
+		("puzzles/puzzle_13x15_hard_1-3-7.txt", 59.49),
+		("puzzles/puzzle_15x10_hard_1-1-6.txt", 69.33),
+		("puzzles/puzzle_15x10_hard_1-10-9.txt", 42.0),
+		("puzzles/puzzle_15x10_hard_1-10-10.txt", 53.33),
+		("puzzles/puzzle_15x10_hard_1-10-12.txt", 53.33),
+		("puzzles/puzzle_17x17_01.txt", 26.99),
+	]
 
-	def test_Masyu_SolveBoard_15x10_hard_1_1_6( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_15x10_hard_1-1-6.txt" )
-		#self.Masyu.board.setNoExit( 2, 1, self.Masyu.board.EAST )
-		#self.Masyu.board.setNoExit( 10, 2, self.Masyu.board.NORTH )
-		#self.Masyu.board.setNoExit( 5, 4, self.Masyu.board.NORTH )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 69.33 )
-	def test_Masyu_SolveBoard_puzzle_17x17_01( self ):
-		self.Masyu.board.loadFromFile( "puzzles/puzzle_17x17_01.txt" )
-		self.Masyu.solveBoard()
-		self.assertEquals( self.Masyu.board.solvedPercent(), 26.99 )
+	def test_Masyu_SolveBoard_puzzles( self ):
+		for pInfo in self.puzzles:
+			print( "Testing: %s" % ( pInfo[0], ) )
+			self.Masyu.board.loadFromFile( pInfo[0] )
+			self.Masyu.solveBoard()
+			solvedPercent = self.Masyu.board.solvedPercent()
+			self.assertEquals( solvedPercent, pInfo[1], "Expected %s, got %s for %s" % ( pInfo[1], solvedPercent, pInfo[0] ) )
+
 
 def suite():
 	suite = unittest.TestSuite()
