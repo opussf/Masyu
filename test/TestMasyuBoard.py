@@ -254,6 +254,12 @@ class TestMasyuBoard( unittest.TestCase ):
 		puzzleName = "puzzles/puzzle_17x17_01.txt"
 		self.masyuBoard.loadFromFile( puzzleName )
 		self.assertEquals( self.masyuBoard.filename, puzzleName )
+	def test_loadFromFile_thenInit( self ):
+		puzzleName = "puzzles/puzzle_17x17_01.txt"
+		self.masyuBoard.loadFromFile( puzzleName )
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.filename, "" )
+
 	def test_isSolved_returnsFalse_3x3( self ):
 		""" assert that isSolved returns false for an empty board """
 		self.masyuBoard.initBoard( 3 )
@@ -297,6 +303,14 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setBoardState( (['.','.','.','.','.','.','.','.','.'],[144,20,48,128,5,32,192,65,96]) )
 		self.assertEquals( self.masyuBoard.getValue( 1, 1 )[1],
 				( self.masyuBoard.NORTH | self.masyuBoard.SOUTH ) )
+	def test_setBoardName_initBoard( self ):
+		self.masyuBoard.initBoard( 3 )
+		self.assertEquals( self.masyuBoard.boardName, "puzzle 3x3" )
+	def test_setBoardName_filename( self ):
+		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
+		self.assertEquals( self.masyuBoard.boardName, "puzzles/puzzle_0.txt" )
+
+
 
 def suite():
 	suite = unittest.TestSuite()

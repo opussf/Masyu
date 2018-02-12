@@ -48,8 +48,10 @@ class SolveMasyu( object ):
 		A board with multiple solutions is possible, an ambigious solution defines an ambigious puzzle.
 		I.E. it is the burden of the puzzle to create a single solution.
 		if the puzzle has a non-empty square, send it to dot() to determine the color, and call the right function.
+
+		Set pause=True to return after each move.
 		"""
-		self.logger.info( "Starting solveBoard for %s" % ( self.board.filename, ) )
+		self.logger.info( "Starting solveBoard for %s" % ( self.board.boardName, ) )
 		self.logger.info( "Empty board:\n%s" % ( self.board, ) )
 		doAgain = True
 		counter = 0
@@ -66,7 +68,7 @@ class SolveMasyu( object ):
 					doAgain = result or doAgain
 					self.logger.debug( "doAgain: %s" % ( doAgain and "True" or "False", ) )
 			self.logger.debug( "End of Loop #%i >>> doAgain: %s" % ( counter, doAgain and "True" or "False" ) )
-		self.logger.info( "Final board state of %s:\n%s" % ( self.board.filename, self.board ) )
+		self.logger.info( "Final board state of %s:\n%s" % ( self.board.boardName, self.board ) )
 		self.logger.info( "Solved percent: %s%%" % ( self.board.solvedPercent(), ) )
 
 		if( self.board.filename ):

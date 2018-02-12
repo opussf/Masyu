@@ -32,6 +32,7 @@ class MasyuBoard( object ):
 	dirLetters = dirValues.keys()
 	def __init__( self, debug=False ):
 		self.debug = debug
+		self.filename = ""
 	def initBoard( self, xSize=None, ySize=None, line=None ):
 		""" init the board,
 		xSize @parameter (int or None): xSize of the puzzle.
@@ -73,12 +74,20 @@ class MasyuBoard( object ):
 			self.setNoExit( 0, y, self.WEST )
 			self.setNoExit( self.xSize-1, y, self.EAST )
 
+		if self.filename:
+			self.boardName = self.filename
+		else:
+			self.boardName = "puzzle %ix%i" % ( self.xSize, self.ySize )
+		self.filename = ""
+
+
 		# @TODO: set noexit flags around the edge of the board on init.
 	def loadFromFile( self, puzzleFile ):
 		""" reads a puzzle file, and inits the board """
 		self.filename = puzzleFile
-		puzzle = file( self.filename, "r" ).read()
+		puzzle = file( puzzleFile, "r" ).read()
 		self.initBoard( line=puzzle )
+		self.filename = puzzleFile
 	def __offset( self, x, y ):
 		""" private function.  return the offset, or raise a ValueError """
 		#print( "__offset( %i, %i )" % ( x, y ) )
