@@ -43,9 +43,6 @@ class SolveMasyu( object ):
 		handler.setFormatter( formatter )
 		self.logger.addHandler( handler )
 		self.logger.info( "SolveMasyu __init__ completed." )
-	def __del__( self ):
-		self.logger.info( "Shutting down" )
-		self.logger.shutdown()
 	def solveBoard( self ):
 		""" Loop though the functions until the board is solved, or a stalemate is found.
 		A board with multiple solutions is possible, an ambigious solution defines an ambigious puzzle.
@@ -71,6 +68,14 @@ class SolveMasyu( object ):
 			self.logger.debug( "End of Loop #%i >>> doAgain: %s" % ( counter, doAgain and "True" or "False" ) )
 		self.logger.info( "Final board state of %s:\n%s" % ( self.board.filename, self.board ) )
 		self.logger.info( "Solved percent: %s%%" % ( self.board.solvedPercent(), ) )
+
+		if( self.board.filename ):
+			fname = self.board.filename.split( "." )
+			fname.insert( 1, "solved" )
+			fname = ".".join( fname )
+			f = open( fname, "w" )
+			f.write( "%s\n%s%%" % ( self.board, self.board.solvedPercent() ) )
+			f.close()
 
 	def dot( self, x, y ):
 		""" determine the color of the dot, and call the right function.
