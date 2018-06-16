@@ -79,7 +79,7 @@ class TestMasyuBoard( unittest.TestCase ):
 	def test_Print_value( self ):
 		""" string shows board """
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
-		self.assertEquals( self.masyuBoard.__str__(), ". w b\n     \n. . .\n     \nb . ." )
+		self.assertEquals( self.masyuBoard.__str__(), ".   w   b\n           \n.   .   .\n           \nb   .   ." )
 	def test_setValue_goodRange_black( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setValue( 0, 0, "b" )
@@ -189,7 +189,7 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 2, 0, 'w' )
 		self.masyuBoard.setExit( 2, 0, 's' )
 		#self.assertEquals( self.masyuBoard.__str__(), u". w\u2500b\n    \u2502\n. . .\n     \nb . ." )
-		self.assertEquals( self.masyuBoard.__str__(), u". w-b\n    |\n. . .\n     \nb . ." )
+		self.assertEquals( self.masyuBoard.__str__(), u".   w---b\n        |  \n.   .   .\n           \nb   .   ." )
 	def test_Print_completed_puzzle( self ):
 		self.masyuBoard.loadFromFile( "puzzles/puzzle_0.txt" )
 		self.masyuBoard.setExit( 1, 0, self.masyuBoard.EAST | self.masyuBoard.WEST )
@@ -198,7 +198,7 @@ class TestMasyuBoard( unittest.TestCase ):
 		self.masyuBoard.setExit( 0, 2, self.masyuBoard.NORTH | self.masyuBoard.EAST )
 		self.masyuBoard.setExit( 0, 1, "n" )
 		self.masyuBoard.setExit( 1, 2, "e" )
-		self.assertEquals( self.masyuBoard.__str__(), ".-w-b\n|   |\n. . .\n|   |\nb-.-." )
+		self.assertEquals( self.masyuBoard.__str__(), ".---w---b\n|       |  \n.   .   .\n|       |  \nb---.---." )
 	def test_setNoExit_goodRange_single( self ):
 		self.masyuBoard.initBoard( 3 )
 		self.masyuBoard.setNoExit( 1, 1, "n" )

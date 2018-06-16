@@ -228,13 +228,13 @@ class MasyuBoard( object ):
 
 		# build the east-west list of lists
 		#  [[' ', '-'], [' ', ' '], [' ', ' ']]
-		ew = [ [ ((self.lineBoard[y*self.xSize + x] & self.EAST) or (self.lineBoard[y*self.xSize + x + 1] & self.WEST)) and "-" or " " \
+		ew = [ [ ((self.lineBoard[y*self.xSize + x] & self.EAST) or (self.lineBoard[y*self.xSize + x + 1] & self.WEST)) and "---" or "   " \
 				for x in range( self.xSize - 1 ) ] for y in range( self.ySize ) ]
 		#print( "ew: %s" % (ew,) )
 
 		# build the north-south list of lists
 		#  [[' ', ' ', '|'], [' ', ' ', ' ']]
-		ns = [ [ ((self.lineBoard[y*self.xSize + x] & self.SOUTH) or (self.lineBoard[(y+1)*self.xSize + x] & self.NORTH)) and "|" or " " \
+		ns = [ [ ((self.lineBoard[y*self.xSize + x] & self.SOUTH) or (self.lineBoard[(y+1)*self.xSize + x] & self.NORTH)) and "|  " or "   " \
 				for x in range( self.xSize ) ] for y in range( self.ySize - 1 ) ]
 		#print( "ns: %s" % (ns,) )
 
