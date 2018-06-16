@@ -297,12 +297,18 @@ class TestSolveMasyu( unittest.TestCase ):
 		self.assertEquals( self.Masyu.board.getValue( 2, 2 )[1],
 				( ( self.Masyu.board.NORTH | self.Masyu.board.SOUTH ) << 4 | self.Masyu.board.EAST | self.Masyu.board.WEST ) )
 
-
-
 	def test_Masyu_SolveBoard_00( self ):
 		self.Masyu.board.initBoard( 3, 3, ".w.\nw..\n..." )
 		self.Masyu.solveBoard()
 		self.assertEquals( self.Masyu.board.solvedPercent(), 55.56 )
+	"""
+	def test_Masyu_SolveBoard_pause( self ):
+		self.Masyu.board.initBoard( 3, 3, ".w.\nw..\n...")
+		self.Masyu.solveBoard( pause=True )
+		self.assertEquals( self.Masyu.board.solvedPercent(), 55.56 )
+	"""
+
+
 	# try some real boards, keep track of how far they can be solved
 	puzzles = [
 		("puzzles/puzzle_00.txt", 55.56),
